@@ -125,19 +125,70 @@ def dibujar_linea_vertical(inicio: tuple,
         y += aumento
         i += 1
 
-def dibujar_lineas_verticales(inicio: tuple,
-                              aumento: int,
-                              repeticiones: int,
-                              color: tuple,
-                              superficie: any)-> None:
+# def dibujar_lineas_verticales(inicio: tuple,
+#                               aumento: int,
+#                               repeticiones: int,
+#                               color: tuple,
+#                               superficie: any)-> None:
+#     '''
+#     Dibuja varias lineas verticales en la superficie indicada. Dentro de Pygame.
+#     '''
+#     x= inicio[0]
+#     y = inicio[1]
+#     funcion = dibujar("linea vertical")
+#     for _ in range(repeticiones + 1):
+#         funcion((x, y), aumento, repeticiones,color, superficie)
+#         x += aumento
+
+
+def dibujar_lineas(inicio: tuple,
+                    aumento: int,
+                    repeticiones: int,
+                    color: tuple,
+                    superficie: any,
+                    funcion: function,
+                    sentido= False)->None:
     '''
-    Dibuja varias lineas verticales en la superficie indicada. Dentro de Pygame.
+    Dibuja varias lineas en el sentido indicado
+
+    PARAMETROS: "inicio"-> Punto de inicio de la linea.
+                
+                "color" -> color de la linea.
+                
+                "repeticiones" -> la cantidad de veces que se ejecutará el proceso.
+                
+                "superficie"-> la superficie donde será pintada las lineas.
+                
+                "funcion"-> funcion que debe dibujar la linea.
+                
+                "sentido" -> orientación en la cual se dibujan las lineas. Si sentido = False se incrementa el "x" para dibujar lineas verticales. En caso de que sentido = True se incrementa el eje "y" para dibujar lineas horizontales
     '''
     x= inicio[0]
     y = inicio[1]
+
     for _ in range(repeticiones + 1):
-        dibujar_linea_vertical((x, y), aumento, repeticiones,color, superficie)
-        x += aumento
+        funcion((x, y), aumento, repeticiones,color, superficie)
+        if sentido:
+            y += aumento
+        else:
+            x += aumento
+
+
+# def dibujar_lineas_horizontales(inicio: tuple,
+#                                 aumento: int,
+#                                 repeticiones: int,
+#                                 color: tuple,
+#                                 superficie: any)-> None:
+#     '''
+#     Dibuja varias lineas verticales en Pygame.
+#     '''
+#     x= inicio[0]
+#     y = inicio[1]
+#     for _ in range(repeticiones +1):
+#         dibujar_linea_horizontal((x, y), aumento, repeticiones,color, superficie)
+#         y += aumento
+
+
 
 def dibujar_linea_horizontal(inicio: tuple,
                              aumento: int,
@@ -157,19 +208,7 @@ def dibujar_linea_horizontal(inicio: tuple,
         x += aumento
         i += 1
 
-def dibujar_lineas_horizontales(inicio: tuple,
-                                aumento: int,
-                                repeticiones: int,
-                                color: tuple,
-                                superficie: any)-> None:
-    '''
-    Dibuja varias lineas verticales en Pygame.
-    '''
-    x= inicio[0]
-    y = inicio[1]
-    for _ in range(repeticiones +1):
-        dibujar_linea_horizontal((x, y), aumento, repeticiones,color, superficie)
-        y += aumento
+
 
 def dibujar_cuadrado_pygame(medidas:tuple,
                      coordenada_inicio: tuple,
@@ -277,14 +316,15 @@ def convertir_coordenada(coordenada: tuple,
                 "aumento" -> el valor con el cual fué aumentando el valor de y
                 "matriz": -> matriz donde se encuentra el nonograma de forma lógica. 
     '''
-    funcion = obtener_funcion("fila")
+    funcion = obtener_funcion_coordenda("fila")
     fila = funcion(coordenada, coordenada_inicial,aumento,matriz)
-    funcion = obtener_funcion("columna")
+    funcion = obtener_funcion_coordenda("columna")
     columna = funcion(coordenada, coordenada_inicial, aumento,matriz)
 
     return fila,columna
 
-def obtener_funcion(tipo: str)->None:
+
+def obtener_funcion_coordenda(tipo: str)->None:
     '''
     obtiene la funcion para convertir una coordenada en un valor de fila o columna.
     
@@ -387,14 +427,15 @@ def ordenar_ranking(ranking: list):
     
     return ranking_retorno
 
-def mostrar_ranking(ruta: str)-> None:
+def mostrar_ranking(ruta: str,
+                    limite: int)-> None:
     '''
     Muestra los primeros 10 jugadores del ranking.
     '''
     matriz = convertir_csv_matriz(ruta)
 
     for i in range(len(matriz)):
-        if i > 10:
+        if i > limite:
             break
         for j in range(len(matriz[i])):
             distancia = len(matriz[0][0]) // 2
@@ -403,16 +444,15 @@ def mostrar_ranking(ruta: str)-> None:
 
 def dibujar_cruz(inicio: tuple,
                 color: tuple,
-                aumento: int|float,
+                longitud_cruz: int|float,
                 superficie: any)-> None:
     '''
     Dibuja una linea vertical en Pygame.
     
-    PARAMETROS: "medidas_cuadrado"-> Son las medidas del cuadrado por ejemplo (400,400)
-                "coordenada_inicio" -> es la coordenada de la punta superior izquierda del cuadrado.
-                "color" -> color del cuadrado.
-                "superficie"-> la superficie donde será pintado el cuadrado.
-                "aumento"-> es el valor por el cual los ejes irán aumentado.
+    PARAMETROS: "inicio"-> Punto de inicio de la cruz.
+                "color" -> color de la cruz.
+                "superficie"-> la superficie donde será pintado la cruz.
+                "longitud_cruz"-> longitud de la cruz.
     '''
     x= inicio[0]
     y = inicio[1]
@@ -420,10 +460,31 @@ def dibujar_cruz(inicio: tuple,
     #DIBUJA UNA LINEA DE LA ESQUINA SUPERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA INFERIOR DERECHA.
     pygame.draw.line(superficie, 
                         color,
-                        (x, y),(x + aumento,y+aumento),3)
+                        (x, y),(x + longitud_cruz,y+longitud_cruz),3)
     
     #DIBUJA UNA LINEA DE LA ESQUINA INFERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA SUPERIOR DERECHA.
     pygame.draw.line(superficie, 
                         color,
-                        (x, y+aumento),(x + aumento,y),3)
+                        (x, y+longitud_cruz),(x + longitud_cruz,y),3)
 
+def dibujar(figura: str)-> function|None:
+    '''
+    Busca la función para dibujar la figura solicitada.
+
+    PARAMETROS: "figura" -> la figura a dibujar.
+    
+    RETORNO: La función para dibujar la figura.
+    '''
+    match figura.lower():
+        case "cuadrado":
+            funcion = dibujar_cuadrado_pygame
+        case "linea vertical":
+            funcion = dibujar_linea_vertical
+        case "linea horizontal":
+            funcion = dibujar_linea_horizontal
+        case "cruz":
+            funcion = dibujar_cruz
+        case _:
+            funcion = None
+
+    return funcion

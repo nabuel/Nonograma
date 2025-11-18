@@ -40,14 +40,20 @@ while activo:
     # #DIBUJA CUADRADOS
     # dibujar_cuadrados_pygame(medida,(X_INICIO,Y_INICIO),VERDE,VENTANA,len(dibujo_jugador),medida[0])
     #ESTOY TESTEEANDO COMO QUEDA LA CRUZ DIBUJADA.
-    dibujar_cruz((X_INICIO, Y_INICIO),GRIS,medida[0],VENTANA)
+    funcion = dibujar("cruz")
+    funcion((X_INICIO, Y_INICIO),GRIS,medida[0],VENTANA)
+    # dibujar_cruz((X_INICIO, Y_INICIO),GRIS,medida[0],VENTANA)
 
     #TESTEANDO UN CUADRADO PINTADO.
-    dibujar_cuadrado_pygame(medida,(X_INICIO + medida[0],Y_INICIO),AZUL,VENTANA)
+    funcion = dibujar("cuadrado")
+    funcion(medida,(X_INICIO + medida[0],Y_INICIO),AZUL,VENTANA)
+    
 
     #DIBUJA LINEAS
-    dibujar_lineas_verticales((X_INICIO,Y_INICIO), medida[0],len(dibujo_jugador),NEGRO,VENTANA)
-    dibujar_lineas_horizontales((X_INICIO,Y_INICIO), medida[0],len(dibujo_jugador),NEGRO,VENTANA)
+    funcion = dibujar("linea vertical")
+    dibujar_lineas((X_INICIO,Y_INICIO), medida[0],len(dibujo_jugador),NEGRO,VENTANA,funcion)
+    funcion = dibujar("linea horizontal")
+    dibujar_lineas((X_INICIO,Y_INICIO), medida[0],len(dibujo_jugador),NEGRO,VENTANA,funcion,True)
     
     #DIBUJA LAS PISTAS
     mostrar_pistas_filas_pygame(pistas_fila,(X_INICIO -25,Y_INICIO),VENTANA,fuente, NEGRO,medida[0])
