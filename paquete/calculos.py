@@ -96,7 +96,7 @@ def calcular_datos_nonograma(rutas: list)-> tuple:
 
     dibujo_jugador = obtener_dibujo(rutas)
 
-    medida_casillas = calcular_medida_celda(dibujo_jugador,(ANCHO_CUADRADO, ALTO_CUADRADO))
+    medida_casillas = calcular_medida_celda(dibujo_jugador,(ANCHO_GRILLA, ALTO_GRILLA))
     
     fuente = pygame.font.SysFont(None, int(medida_casillas[0]//2))
 

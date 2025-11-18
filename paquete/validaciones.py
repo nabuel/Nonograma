@@ -1,9 +1,9 @@
 import random
 from .funciones_generales import *
+from graficos.config import *
 
 def chequear_casilla(matriz_correcta: list,
-                     fila: int,
-                     columna: int,
+                     coordendas: tuple,
                      dibujo: list)-> bool:
     '''
     Chequea si la casilla marcada es correcta.
@@ -11,9 +11,8 @@ def chequear_casilla(matriz_correcta: list,
     Retorno: True si es correcta.
              False si no lo es.
     '''
-    if matriz_correcta[fila][columna] == dibujo[fila][columna]:
+    if matriz_correcta[coordendas[0]][coordendas[1]] == dibujo[coordendas[0]][coordendas[1]]:
         return True
-
     return False
 
 
@@ -136,3 +135,19 @@ def chequear_final(dibujo: list,
         seguir_jugando = True
     
     return seguir_jugando
+
+
+def validar_click_grilla(posicion_mouse):
+    '''
+    Verifica si la coordenada del mouse está dentro de la grilla del Nonograma.
+    '''
+    x = posicion_mouse[0]
+    y = posicion_mouse[1]
+    bandera = True
+
+    if x < X_INICIO_GRILLA or x > X_INICIO_GRILLA + ANCHO_GRILLA - 2:
+        bandera = False
+    elif y < Y_INICIO_GRILLA or y > Y_INICIO_GRILLA + ALTO_GRILLA:
+        bandera = False
+    
+    return bandera

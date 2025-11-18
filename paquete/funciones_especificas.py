@@ -173,7 +173,7 @@ def inicio_cuadrado(posicion_click: tuple,
         elif y == y_inicio:
             continue
         else:
-            y_inicio + aumento
+            y_inicio += aumento
 
     return x,y
 
