@@ -16,6 +16,7 @@ def chequear_casilla(matriz_correcta: list,
 
     return False
 
+
 def chequear_dibujo_terminado(dibujo: list,
                              respuesta: list)-> bool:
     '''
@@ -31,19 +32,6 @@ def chequear_dibujo_terminado(dibujo: list,
     
     return True
 
-def get_int(mensaje: str)-> int:
-    '''
-    Consigue un número entero positivo.
-
-    Retorno: el número entero conseguido.
-    '''
-    numero = input(mensaje)
-
-    while not numero.isdigit():
-        print("Se le solicita ingresar número entero positivo.")
-        numero = input(mensaje)
-    
-    return int(numero)
 
 def get_coordenada(mensaje_fila: str,
                    mensaje_columna: str,
@@ -62,6 +50,7 @@ def get_coordenada(mensaje_fila: str,
     
     return fila,columna
 
+
 def validar_coordenada(fila: int,
                        columna: int,
                        matriz: list)-> bool:
@@ -78,6 +67,7 @@ def validar_coordenada(fila: int,
 
     return True
 
+
 def obtener_dibujo(lista_rutas: list)-> list:
     '''
     Obtiene un dibujo al azar.
@@ -86,24 +76,9 @@ def obtener_dibujo(lista_rutas: list)-> list:
     '''
     numero_dibujo = random.randint(0,len(lista_rutas)-1)
     dibujo = convertir_csv_matriz(lista_rutas[numero_dibujo])
-    
-    # match numero_dibujo:
-    #     case 1:
-    #         ruta = "Nonograma/archivos/auto.csv"
-    #     case 2:
-    #         ruta = "Nonograma/archivos/buho.csv"
-    #     case 3:
-    #         ruta = "Nonograma/archivos/cara_feliz.csv"
-    #     case 4:
-    #         ruta = "Nonograma/archivos/gato.csv"
-    #     case 5:
-    #         ruta = "Nonograma/archivos/inodoro.csv"
-    #     case 6:
-    #         ruta = "Nonograma/archivos/hongo_malo.csv"
-        
-    # dibujo = convertir_csv_matriz(ruta)
 
     return dibujo
+
 
 def validar(tipo: str)-> any:
     '''
@@ -120,6 +95,7 @@ def validar(tipo: str)-> any:
             funcion = chequear_dibujo_terminado
     
     return funcion
+
 
 def obtener_dato(tipo: str)->any:
     '''
@@ -139,3 +115,24 @@ def obtener_dato(tipo: str)->any:
     
     return funcion
 
+
+def chequear_final(dibujo: list,
+                   vidas: int,
+                   respuesta: str)-> bool:
+    '''
+    Chequea si se sigue jugando o no.
+
+    Retorno: True si se sigue jugando.
+             False si no se sigue jugandno.
+    '''
+    seguir_jugando = False
+    if vidas == 0:
+        print("Te quedaste sin vidas.")
+        print("")
+    elif chequear_dibujo_terminado(dibujo, respuesta):
+        print("GANASTE!! Completaste correctamente el dibujo.")
+        print("")
+    else:
+        seguir_jugando = True
+    
+    return seguir_jugando

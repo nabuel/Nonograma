@@ -8,6 +8,7 @@ def mostrar_matriz(matriz: list)-> None:
             print(matriz[i][j], end= " ")
         print("")
 
+
 def crear_matriz(filas: int,
                  columnas: int,
                  valor = False)->list:
@@ -23,6 +24,7 @@ def crear_matriz(filas: int,
         matriz += [fila_creada]
     
     return matriz
+
 
 def convertir_csv_matriz(ruta: str)-> list:
     '''
@@ -48,6 +50,7 @@ def convertir_csv_matriz(ruta: str)-> list:
     
     return matriz
 
+
 def extraer_columna(matriz: list,
                     columna: int)-> list:
     '''
@@ -59,6 +62,7 @@ def extraer_columna(matriz: list,
     for i in range(len(matriz)):
             lista.append(matriz[i][columna])
     return lista
+
 
 def get_binario(mensaje: str)-> int:
     '''
@@ -74,14 +78,20 @@ def get_binario(mensaje: str)-> int:
     return int(numero)
 
 
-def dividir(divisor: int|float,
-            dividendo: int|float)-> int|float:
+def get_int(mensaje: str)-> int:
     '''
-    Divide al dividendo por el divisor
-    '''
-    resultado = dividendo / divisor
+    Consigue un número entero positivo.
 
-    return resultado
+    Retorno: el número entero conseguido.
+    '''
+    numero = input(mensaje)
+
+    while not numero.isdigit():
+        print("Se le solicita ingresar número entero positivo.")
+        numero = input(mensaje)
+    
+    return int(numero)
+
 
 def escribir_csv(ruta: str,
                  matriz: list,
