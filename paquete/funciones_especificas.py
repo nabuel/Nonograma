@@ -71,14 +71,12 @@ def chequear_final(dibujo: list,
 
 def pintar_casilla(dibujo: list,
                    coordenada: tuple,
-                   numero: int)-> list:
+                   valor = False)-> list:
     '''
     Pinta la casilla ubicada en las coordenadas de fila y columna.
 
     Retorno: El dibujo con la casilla pintada.
     '''
-    valor = numero
-
     fila = coordenada[0]
     columna = coordenada[1]
 
@@ -87,15 +85,15 @@ def pintar_casilla(dibujo: list,
     return dibujo
 
 
-def extraer_funcion(lista_funciones: list,
-                    indice: int)-> any:
-    '''
-    Selecciona la función indicada de la lista de funciones.
+# def extraer_funcion(lista_funciones: list,
+#                     indice: int)-> any:
+#     '''
+#     Selecciona la función indicada de la lista de funciones.
 
-    Retorno: la funcion seleccionada.
-    '''
-    funcion = lista_funciones[indice]
-    return funcion
+#     Retorno: la funcion seleccionada.
+#     '''
+#     funcion = lista_funciones[indice]
+#     return funcion
 
 def calcular_medida_celda(dibujo: list,
                           medida_cuadrado: tuple)-> tuple:
@@ -123,7 +121,7 @@ def dibujar_linea_vertical(inicio: tuple,
     while i < repeticiones:
         pygame.draw.line(superficie, 
                         color,
-                        (x, y),(x,y + aumento))
+                        (x, y),(x,y + aumento),2)
         y += aumento
         i += 1
 
@@ -155,7 +153,7 @@ def dibujar_linea_horizontal(inicio: tuple,
     while i < repeticiones:
         pygame.draw.line(superficie, 
                         color,
-                        (x, y),(x + aumento,y))
+                        (x, y),(x + aumento,y),2)
         x += aumento
         i += 1
 
@@ -274,8 +272,7 @@ def convertir_coordenada(coordenada: tuple,
     '''
     Convierte la coordenada en un valor de fila y columna para la matriz ingresada.
     
-    PARAMETROS: "tipo" -> indica si quiere la conversión de las filas o columnas.
-                "coordenada" -> valor de la coordenada cliqueada.
+    PARAMETROS: "coordenada" -> valor de la coordenada cliqueada.
                 "coordenada_inicial" -> coordenada de la esquina superior izquierda del cuadrado/rectángulo.
                 "aumento" -> el valor con el cual fué aumentando el valor de y
                 "matriz": -> matriz donde se encuentra el nonograma de forma lógica. 
@@ -403,11 +400,30 @@ def mostrar_ranking(ruta: str)-> None:
             distancia = len(matriz[0][0]) // 2
             print(matriz[i][j],"" * distancia, end="")
         print("")
-    
 
-    # for j in range(len(matriz[0])):
-    #     for i in range(len(matriz)):
-    #         if i > 10:
-    #             return None
-    #         print(matriz[i][j], " " * 5, end=" ")
-    #     print("")
+def dibujar_cruz(inicio: tuple,
+                color: tuple,
+                aumento: int|float,
+                superficie: any)-> None:
+    '''
+    Dibuja una linea vertical en Pygame.
+    
+    PARAMETROS: "medidas_cuadrado"-> Son las medidas del cuadrado por ejemplo (400,400)
+                "coordenada_inicio" -> es la coordenada de la punta superior izquierda del cuadrado.
+                "color" -> color del cuadrado.
+                "superficie"-> la superficie donde será pintado el cuadrado.
+                "aumento"-> es el valor por el cual los ejes irán aumentado.
+    '''
+    x= inicio[0]
+    y = inicio[1]
+
+    #DIBUJA UNA LINEA DE LA ESQUINA SUPERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA INFERIOR DERECHA.
+    pygame.draw.line(superficie, 
+                        color,
+                        (x, y),(x + aumento,y+aumento),3)
+    
+    #DIBUJA UNA LINEA DE LA ESQUINA INFERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA SUPERIOR DERECHA.
+    pygame.draw.line(superficie, 
+                        color,
+                        (x, y+aumento),(x + aumento,y),3)
+

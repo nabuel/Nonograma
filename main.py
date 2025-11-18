@@ -29,7 +29,8 @@ while activo:
                      BLANCO,
                      (X_INICIO, Y_INICIO, ANCHO_CUADRADO, ALTO_CUADRADO))
     
-    medida = calcular_medida_celda(dibujo_jugador,(400,400))
+    medida = calcular_medida_celda(dibujo_jugador,(ANCHO_CUADRADO, ALTO_CUADRADO))
+
     resultado = medida[0]//2
     fuente = pygame.font.SysFont(None, int(resultado))
     pistas_fila = calcular_pistas_filas(dibujo_jugador)
@@ -38,14 +39,21 @@ while activo:
 
     # #DIBUJA CUADRADOS
     # dibujar_cuadrados_pygame(medida,(X_INICIO,Y_INICIO),VERDE,VENTANA,len(dibujo_jugador),medida[0])
+    #ESTOY TESTEEANDO COMO QUEDA LA CRUZ DIBUJADA.
+    dibujar_cruz((X_INICIO, Y_INICIO),GRIS,medida[0],VENTANA)
+
+    #TESTEANDO UN CUADRADO PINTADO.
+    dibujar_cuadrado_pygame(medida,(X_INICIO + medida[0],Y_INICIO),AZUL,VENTANA)
 
     #DIBUJA LINEAS
-    dibujar_lineas_verticales((210,200), medida[0],len(dibujo_jugador),NEGRO,VENTANA)
-    dibujar_lineas_horizontales((210,200), medida[0],len(dibujo_jugador),NEGRO,VENTANA)
+    dibujar_lineas_verticales((X_INICIO,Y_INICIO), medida[0],len(dibujo_jugador),NEGRO,VENTANA)
+    dibujar_lineas_horizontales((X_INICIO,Y_INICIO), medida[0],len(dibujo_jugador),NEGRO,VENTANA)
     
     #DIBUJA LAS PISTAS
     mostrar_pistas_filas_pygame(pistas_fila,(X_INICIO -25,Y_INICIO),VENTANA,fuente, NEGRO,medida[0])
     #DIBUJA LAS PISTAS DE LAS COLUMNAS.
     mostrar_pistas_columnas_pygame(pistas_columna,(X_INICIO, Y_INICIO - 25), VENTANA,fuente,NEGRO,medida[0])
+    
+    
     pygame.display.update()
 pygame.quit()

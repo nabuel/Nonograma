@@ -27,3 +27,4 @@ from graficos.config import *
 
 funciones_especificas.mostrar_ranking("Nonograma/archivos/ranking.csv")
 
+# funciones_especificas.dibujar_cruz((X_INICIO, Y_INICIO),VERDE,)
