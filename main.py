@@ -25,6 +25,7 @@ vidas = 3
 
 #Ordenamiento de datos.
 grilla_jugador = crear_matriz(len(DIBUJO_CORRECTO), len(DIBUJO_CORRECTO))
+grilla_coordendas = grilla_jugador
 lista_coordenadas_cruz = set()
 lista_coordenadas_cuadrado = set()
 coordenadas_suspendidas = []
@@ -49,6 +50,7 @@ while activo:
         if evento.type == pygame.QUIT:
             print("Se tocó cerrar")
             activo = False
+            
 
         
     pygame.display.update()

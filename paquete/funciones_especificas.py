@@ -1,7 +1,7 @@
 from .validaciones import *
 from .funciones_generales import *
 from .calculos import *
-import pygame
+# import Pygame
 
 
 def pintar_casilla(dibujo: list,
@@ -143,6 +143,7 @@ def dibujar_cuadrados_especificos(lista_coordenadas: list,
     '''
     for coordenada in lista_coordenadas:
         dibujar_cuadrado_pygame(medidas_cuadrado,(coordenada[0],coordenada[1]),color,superficie)
+
 
 def inicio_cuadrado(posicion_click: tuple,
                     aumento: int,
@@ -375,3 +376,29 @@ def dibujar(figura: str)-> None:
             funcion = None
 
     return funcion
+
+
+def cargar_coordenadas_grilla(grilla_jugador: list,
+                              longitud_casilla: int,
+                              coordenadas_inicio: tuple) -> list:
+    '''
+    Carga la matriz con las coordenadas de las casillas.
+    
+    PARAMETROS: "grilla_jugador" -> grilla lógica del jugador.
+
+                "longitud_casilla" -> logitud de las casillas para calcular las coordenadas.
+                
+                "coordenadas_inicio" -> Esquina superior izquierda de la grilla dibujada.
+    
+    RETORNO: La matriz cargada con las coordenadas iniciales de las casillas.
+    '''
+    matriz_retorno = []
+    x,y = coordenadas_inicio
+    for i in range(len(grilla_jugador)):
+        for _ in range(len(grilla_jugador[i])):
+            matriz_retorno.append((x,y))
+            x += longitud_casilla
+        y += y
+        x = coordenadas_inicio[0]
+    
+    return matriz_retorno
