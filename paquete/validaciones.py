@@ -3,7 +3,7 @@ from .funciones_generales import *
 from graficos.config import *
 
 def chequear_casilla(matriz_correcta: list,
-                     coordendas: tuple,
+                     coordenadas: tuple,
                      dibujo: list)-> bool:
     '''
     Chequea si la casilla marcada es correcta.
@@ -11,7 +11,7 @@ def chequear_casilla(matriz_correcta: list,
     Retorno: True si es correcta.
              False si no lo es.
     '''
-    if matriz_correcta[coordendas[0]][coordendas[1]] == dibujo[coordendas[0]][coordendas[1]]:
+    if matriz_correcta[coordenadas[0]][coordenadas[1]] == dibujo[coordenadas[0]][coordenadas[1]]:
         return True
     return False
 

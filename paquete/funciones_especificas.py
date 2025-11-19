@@ -146,7 +146,7 @@ def dibujar_cuadrados_especificos(lista_coordenadas: list,
 
 def inicio_cuadrado(posicion_click: tuple,
                     aumento: int,
-                    coordenada_inicial:tuple):
+                    coordenada_inicial:tuple)-> tuple:
     '''
     Según donde se clickea se calcula la coordenada de inicio del cuadrado.
 
@@ -162,7 +162,7 @@ def inicio_cuadrado(posicion_click: tuple,
 
     while x != x_inicio or y != y_inicio:
         if x < x_inicio + aumento:
-            x = x_inicio
+            x = int(x_inicio)
         elif x == x_inicio:
             continue
         else:
@@ -170,7 +170,7 @@ def inicio_cuadrado(posicion_click: tuple,
 
         if y < y_inicio + aumento:
             y = y_inicio
-        elif y == y_inicio:
+        elif y == int(y_inicio):
             continue
         else:
             y_inicio += aumento
@@ -218,7 +218,7 @@ def convertir_coordenda(coordenada: tuple,
 def convertir_coordenadas(coordenada: tuple, 
                         coordenada_inicial: tuple, 
                         aumento: int, 
-                        matriz: list)->int:
+                        matriz: list)->tuple:
     '''
     Convierte la coordenada en un valor de fila y columna para la matriz ingresada.
     
@@ -226,6 +226,8 @@ def convertir_coordenadas(coordenada: tuple,
                 "coordenada_inicial" -> coordenada de la esquina superior izquierda del cuadrado/rectángulo.
                 "aumento" -> el valor con el cual fué aumentando el valor de y
                 "matriz": -> matriz donde se encuentra el nonograma de forma lógica. 
+    
+    RETORNO: Las coordenada obtenidas para la matriz.
     '''
     fila = convertir_coordenda(coordenada, coordenada_inicial,aumento,matriz,True)
     columna = convertir_coordenda(coordenada, coordenada_inicial, aumento,matriz)
