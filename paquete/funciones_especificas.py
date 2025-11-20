@@ -1,3 +1,4 @@
+from Nonograma.main import DIBUJO_CORRECTO
 from .validaciones import *
 from .funciones_generales import *
 from .calculos import *
@@ -145,7 +146,7 @@ def dibujar_cuadrados_especificos(lista_coordenadas: list,
         dibujar_cuadrado_pygame(medidas_cuadrado,(coordenada[0],coordenada[1]),color,superficie)
 
 
-def inicio_cuadrado(posicion_click: tuple,
+def calcular_inicio_cuadrado(posicion_click: tuple,
                     aumento: int,
                     coordenada_inicial:tuple)-> tuple:
     '''
@@ -396,9 +397,92 @@ def cargar_coordenadas_grilla(grilla_jugador: list,
     x,y = coordenadas_inicio
     for i in range(len(grilla_jugador)):
         for _ in range(len(grilla_jugador[i])):
-            matriz_retorno.append((x,y))
+            coordenada = convertir_coordenadas((x,y),coordenadas_inicio,longitud_casilla,grilla_jugador)
+            matriz_retorno.append((coordenada))
             x += longitud_casilla
-        y += y
+        y += longitud_casilla
         x = coordenadas_inicio[0]
     
     return matriz_retorno
+
+def definir_estado_click(posicion_click: tuple,
+                        grilla_jugador: list,
+                        longitud_casilla: int,
+                        numero_click: int) -> str:
+    '''
+    Define el estado del click realizado por el jugador.
+    
+    PARAMETROS: "posicion_click" -> coordenada donde se cliqueó.
+                "grilla_jugador" -> grilla lógica del jugador.
+                "longitud_casilla" -> logitud de las casillas para calcular las coordenadas.
+                "numero_click" -> número del click realizado (1 = izquierdo, 3 = derecho).
+    
+    RETORNO: El estado del click (correcto, incorrecto, revertir).
+    '''
+    #click izquierdo
+    fila,columna = convertir_coordenadas(posicion_click, (X_INICIO_GRILLA,Y_INICIO_GRILLA), longitud_casilla,grilla_jugador)
+    if numero_click == 1:
+        if DIBUJO_CORRECTO[fila][columna] == 1:
+            estado = "correcto"
+        elif DIBUJO_CORRECTO[fila][columna] == 0 and DIBUJO_CORRECTO[fila][columna] == 1:
+            estado = "revertir"
+        elif DIBUJO_CORRECTO[fila][columna] == 0:
+            estado = "incorrecto"
+    elif numero_click == 3:
+        if DIBUJO_CORRECTO[fila][columna] == 0:
+            estado = "correcto"
+        elif grilla_jugador[fila][columna] == 1 and DIBUJO_CORRECTO[fila][columna] == 0:
+            estado = "revertir"
+        elif DIBUJO_CORRECTO[fila][columna] == 1:
+            estado = "incorrecto"
+    
+    return estado
+    
+        
+def manejar_click(numero_click: int,
+                 estado_click: str,
+                 set_coordenadas_correctas: set,
+                 lista_coordenadas_suspendidas: list,
+                 coordenadas_cruz: set,
+                 coordenadas_cuadrado: set,
+                 posicion_click)-> tuple:
+    '''
+    Maneja el click realizado por el jugador.
+    
+    PARAMETROS: "numero_click" -> número del click realizado (1 = izquierdo, 3 = derecho).
+                "estado_click" -> el estado del click (correcto, incorrecto, revertir).
+                "set_coordenadas_correctas" -> conjunto de coordenadas correctas.
+                "lista_coordenadas_suspendidas" -> lista de coordenadas suspendidas.
+                "coordenadas_cruz" -> conjunto de coordenadas donde se dibuja una cruz.
+                "coordenadas_cuadrado" -> conjunto de coordenadas donde se dibuja un cuadrado.
+                "posicion_click" -> coordenada donde se cliqueó.
+    '''
+
+    match estado_click:
+        case "correcto":
+                set_coordenadas_correctas.add(posicion_click)
+        case "incorrecto":
+            if numero_click == 1:
+                if lista_coordenadas_suspendidas.count(posicion_click) == 0:
+                    lista_coordenadas_suspendidas.append(posicion_click)
+    
+                coordenadas_cuadrado.add(posicion_click)
+            elif numero_click == 3:
+                if lista_coordenadas_suspendidas.count(posicion_click) == 0:
+                    lista_coordenadas_suspendidas.append(posicion_click)
+                
+                coordenadas_cruz.add(posicion_click)
+                
+        case "revertir":
+            if posicion_click not in set_coordenadas_correctas: #Porque si la posición del click ya está en las correctas no se hace nada.
+                if numero_click == 1:
+                    set_coordenadas_correctas.add(posicion_click)
+                    coordenadas_cruz.discard(posicion_click)
+                    coordenadas_cuadrado.add(posicion_click)
+                elif numero_click == 3:
+                    set_coordenadas_correctas.add(posicion_click)
+                    coordenadas_cuadrado.discard(posicion_click)
+                    coordenadas_cruz.add(posicion_click)
+        
+    
+    return set_coordenadas_correctas, lista_coordenadas_suspendidas, coordenadas_cruz, coordenadas_cuadrado

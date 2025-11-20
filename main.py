@@ -25,7 +25,7 @@ vidas = 3
 
 #Ordenamiento de datos.
 grilla_jugador = crear_matriz(len(DIBUJO_CORRECTO), len(DIBUJO_CORRECTO))
-grilla_coordendas = grilla_jugador
+grilla_coordenadas = cargar_coordenadas_grilla(grilla_jugador, longitud_celda, (X_INICIO_GRILLA,Y_INICIO_GRILLA))
 lista_coordenadas_cruz = set()
 lista_coordenadas_cuadrado = set()
 coordenadas_suspendidas = []
@@ -50,6 +50,32 @@ while activo:
         if evento.type == pygame.QUIT:
             print("Se tocó cerrar")
             activo = False
+        
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+            posicion_mouse = pygame.mouse.get_pos()
+            posicion_mouse = calcular_inicio_cuadrado(posicion_mouse, longitud_celda, (X_INICIO_GRILLA,Y_INICIO_GRILLA))
+            valor_click = evento.button
+            #Si la posición del mouse está dentro de la grilla. 
+            if posicion_mouse in grilla_coordenadas:
+                if valor_click == 1 or valor_click == 3:
+                    match definir_estado_click(posicion_mouse, grilla_jugador, longitud_celda, valor_click):
+                        case "correcto":
+                            datos_click = manejar_click(valor_click, "correcto", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado)
+                            coordenadas_correctas = datos_click[0]
+                        case "incorrecto":
+                            #Acá inicia el contador de 3 segundos.
+                            datos_click = manejar_click(valor_click, "incorrecto", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado)
+                            coordenadas_suspendidas = datos_click[1]
+                            posicion_mouse_suspendida = coordenadas_suspendidas[0]
+                            lista_coordenadas_cuadrado = datos_click[3]
+
+                        case "revertir":
+                            manejar_click(valor_click, "revertir", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado)
+                            
+                            coordenadas_correctas = datos_click[0]
+                            lista_coordenadas_cruz = datos_click[2]
+                            lista_coordenadas_cuadrado = datos_click[3]
+    
             
 
         

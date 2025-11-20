@@ -93,7 +93,7 @@ def calcular_datos_nonograma(rutas: list)-> tuple:
     PARAMETROS: "rutas" -> lista que contine las rutas de los dibujos
     RETORNO: Los datos obtenidos.
     '''
-
+    
     dibujo_jugador = obtener_dibujo(rutas)
 
     medida_casillas = calcular_medida_celda(dibujo_jugador,(ANCHO_GRILLA, ALTO_GRILLA))
