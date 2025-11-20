@@ -59,9 +59,9 @@ def validar_coordenada(fila: int,
     Retorno: True si son válidas.
              False si no lo son.
     '''
-    if fila > len(matriz):
+    if fila >= len(matriz):
         return False
-    elif columna > len(matriz[0]):
+    elif columna >= len(matriz[0]):
         return False
 
     return True

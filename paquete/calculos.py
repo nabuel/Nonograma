@@ -59,8 +59,8 @@ def calcular_medida_celda(dibujo: list,
 
     Retorno: Las medidas de ancho y largo.
     '''
-    ancho =  dividir(medida_cuadrado[0], len(dibujo))
-    largo = dividir(medida_cuadrado[1], len(dibujo[0]))
+    ancho = medida_cuadrado[0] // len(dibujo) 
+    largo = medida_cuadrado[1] // len(dibujo[0])
 
     return ancho, largo
 

@@ -1,4 +1,4 @@
-from Nonograma.main import DIBUJO_CORRECTO
+
 from .validaciones import *
 from .funciones_generales import *
 from .calculos import *
@@ -166,21 +166,21 @@ def calcular_inicio_cuadrado(posicion_click: tuple,
         if x < x_inicio + aumento:
             x = int(x_inicio)
         elif x == x_inicio:
-            continue
+            pass
         else:
             x_inicio += aumento
 
         if y < y_inicio + aumento:
             y = y_inicio
         elif y == int(y_inicio):
-            continue
+            pass
         else:
             y_inicio += aumento
 
     return x,y
 
 
-def convertir_coordenda(coordenada: tuple,
+def convertir_coordenada(coordenada: tuple,
                         coordenada_inicial: tuple,
                         aumento: int,
                         matriz: list,
@@ -231,8 +231,8 @@ def convertir_coordenadas(coordenada: tuple,
     
     RETORNO: Las coordenada obtenidas para la matriz.
     '''
-    fila = convertir_coordenda(coordenada, coordenada_inicial,aumento,matriz,True)
-    columna = convertir_coordenda(coordenada, coordenada_inicial, aumento,matriz)
+    fila = convertir_coordenada(coordenada, coordenada_inicial,aumento,matriz,True)
+    columna = convertir_coordenada(coordenada, coordenada_inicial, aumento,matriz)
 
     return fila,columna
 
@@ -246,9 +246,8 @@ def mostrar_pistas_filas_pygame(lista_pistas: tuple,
     '''
     Muestra la pista en Pygame.
     '''
-    funcion = dividir
     y = coordenadas[1]
-    y = y + funcion(aumento,2)
+    y = y + dividir(aumento,2)
 
     for pista in lista_pistas:
         indice = -1
@@ -261,7 +260,7 @@ def mostrar_pistas_filas_pygame(lista_pistas: tuple,
                 superficie.blit(texto, (x,y))
             indice -= 1
             
-            x -= funcion(aumento,2)
+            x -= dividir(aumento,2)
         y += aumento
 
 
@@ -330,30 +329,25 @@ def mostrar_ranking(ruta: str,
         print("")
 
 
-def dibujar_cruz(inicio: tuple,
-                color: tuple,
-                longitud_cruz: int|float,
-                superficie: any)-> None:
-    '''
-    Dibuja una linea vertical en Pygame.
-    
-    PARAMETROS: "inicio"-> Punto de inicio de la cruz.
-                "color" -> color de la cruz.
-                "superficie"-> la superficie donde será pintado la cruz.
-                "longitud_cruz"-> longitud de la cruz.
-    '''
-    x= inicio[0]
-    y = inicio[1]
 
-    #DIBUJA UNA LINEA DE LA ESQUINA SUPERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA INFERIOR DERECHA.
-    pygame.draw.line(superficie, 
-                        color,
-                        (x, y),(x + longitud_cruz,y+longitud_cruz),3)
-    
-    #DIBUJA UNA LINEA DE LA ESQUINA INFERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA SUPERIOR DERECHA.
-    pygame.draw.line(superficie, 
-                        color,
-                        (x, y+longitud_cruz),(x + longitud_cruz,y),3)
+
+
+
+def dibujar_cruces_especificas(lista_coordenadas: list,
+                                longitud_cruz: int|float,
+                                color: tuple,
+                                superficie: any)-> None:
+    '''
+    Dibuja varias cruces en las ubicaciones especificas indicadas.
+
+    PARAMETROS: "lista_coordenadas" -> es una lista que contiene las coordendas de las cruces especificas a pintar.
+                "longitud_cruz"-> longitud de la cruz.
+                "color" -> color de la cruz.
+                "superficie" -> la superficie donde será pintado la cruz.
+    '''
+    dibujar_cruz = dibujar("cruz")
+    for coordenada in lista_coordenadas:
+        dibujar_cruz((coordenada[0],coordenada[1]),color,longitud_cruz,superficie)
 
 
 def dibujar(figura: str)-> None:
@@ -372,11 +366,37 @@ def dibujar(figura: str)-> None:
         case "linea horizontal":
             funcion = dibujar_linea_horizontal
         case "cruz":
-            funcion = dibujar_cruz
+            funcion = dibujar_cruz_pygame
         case _:
             funcion = None
 
     return funcion
+
+
+def dibujar_cruz_pygame(inicio: tuple,
+                color: tuple,
+                longitud_cruz: int|float,
+                superficie: any)-> None:
+    '''
+    Dibuja una linea vertical en Pygame.
+    
+    PARAMETROS: "inicio"-> Punto de inicio de la cruz.
+                "color" -> color de la cruz.
+                "superficie"-> la superficie donde será pintado la cruz.
+                "longitud_cruz"-> longitud de la cruz.
+    '''
+    x = inicio[0]
+    y = inicio[1]
+    
+        #DIBUJA UNA LINEA DE LA ESQUINA SUPERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA INFERIOR DERECHA.
+    pygame.draw.line(superficie, 
+                        color,
+                        (x, y),(x + longitud_cruz,y+longitud_cruz),3)
+    
+    #DIBUJA UNA LINEA DE LA ESQUINA INFERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA SUPERIOR DERECHA.
+    pygame.draw.line(superficie, 
+                        color,
+                        (x, y+longitud_cruz),(x + longitud_cruz,y),3)
 
 
 def cargar_coordenadas_grilla(grilla_jugador: list,
@@ -397,18 +417,20 @@ def cargar_coordenadas_grilla(grilla_jugador: list,
     x,y = coordenadas_inicio
     for i in range(len(grilla_jugador)):
         for _ in range(len(grilla_jugador[i])):
-            coordenada = convertir_coordenadas((x,y),coordenadas_inicio,longitud_casilla,grilla_jugador)
-            matriz_retorno.append((coordenada))
+            matriz_retorno.append((x,y))
             x += longitud_casilla
         y += longitud_casilla
         x = coordenadas_inicio[0]
     
     return matriz_retorno
 
+
 def definir_estado_click(posicion_click: tuple,
                         grilla_jugador: list,
                         longitud_casilla: int,
-                        numero_click: int) -> str:
+                        numero_click: int,
+                        grilla_correcta: list,
+                        coordenadas_correctas: set) -> str:
     '''
     Define el estado del click realizado por el jugador.
     
@@ -422,18 +444,25 @@ def definir_estado_click(posicion_click: tuple,
     #click izquierdo
     fila,columna = convertir_coordenadas(posicion_click, (X_INICIO_GRILLA,Y_INICIO_GRILLA), longitud_casilla,grilla_jugador)
     if numero_click == 1:
-        if DIBUJO_CORRECTO[fila][columna] == 1:
-            estado = "correcto"
-        elif DIBUJO_CORRECTO[fila][columna] == 0 and DIBUJO_CORRECTO[fila][columna] == 1:
+        
+        if grilla_jugador[fila][columna] == 1 and (posicion_click not in coordenadas_correctas):
+            estado = "borrar"
+        elif grilla_jugador[fila][columna] == 0 and (posicion_click not in coordenadas_correctas):
             estado = "revertir"
-        elif DIBUJO_CORRECTO[fila][columna] == 0:
+        elif grilla_correcta[fila][columna] == 1:
+            estado = "correcto"
+        elif grilla_correcta[fila][columna] == 0:
             estado = "incorrecto"
+    
     elif numero_click == 3:
-        if DIBUJO_CORRECTO[fila][columna] == 0:
-            estado = "correcto"
-        elif grilla_jugador[fila][columna] == 1 and DIBUJO_CORRECTO[fila][columna] == 0:
+        
+        if grilla_jugador[fila][columna] == 0 and (posicion_click not in coordenadas_correctas):
+            estado = "borrar"
+        elif grilla_jugador[fila][columna] == 1 and (posicion_click not in coordenadas_correctas):
             estado = "revertir"
-        elif DIBUJO_CORRECTO[fila][columna] == 1:
+        elif grilla_correcta[fila][columna] == 0:
+            estado = "correcto"
+        elif grilla_correcta[fila][columna] == 1:
             estado = "incorrecto"
     
     return estado
@@ -445,7 +474,7 @@ def manejar_click(numero_click: int,
                  lista_coordenadas_suspendidas: list,
                  coordenadas_cruz: set,
                  coordenadas_cuadrado: set,
-                 posicion_click)-> tuple:
+                 posicion_click: tuple)-> tuple:
     '''
     Maneja el click realizado por el jugador.
     
@@ -460,7 +489,12 @@ def manejar_click(numero_click: int,
 
     match estado_click:
         case "correcto":
-                set_coordenadas_correctas.add(posicion_click)
+            if numero_click == 1:
+                coordenadas_cuadrado.add(posicion_click)
+            elif numero_click == 3:
+                coordenadas_cruz.add(posicion_click)
+                
+            set_coordenadas_correctas.add(posicion_click)
         case "incorrecto":
             if numero_click == 1:
                 if lista_coordenadas_suspendidas.count(posicion_click) == 0:
@@ -474,15 +508,22 @@ def manejar_click(numero_click: int,
                 coordenadas_cruz.add(posicion_click)
                 
         case "revertir":
-            if posicion_click not in set_coordenadas_correctas: #Porque si la posición del click ya está en las correctas no se hace nada.
-                if numero_click == 1:
-                    set_coordenadas_correctas.add(posicion_click)
-                    coordenadas_cruz.discard(posicion_click)
-                    coordenadas_cuadrado.add(posicion_click)
-                elif numero_click == 3:
-                    set_coordenadas_correctas.add(posicion_click)
-                    coordenadas_cuadrado.discard(posicion_click)
-                    coordenadas_cruz.add(posicion_click)
+            if numero_click == 1:
+                coordenadas_cruz.discard(posicion_click)
+                coordenadas_cuadrado.add(posicion_click)
+            elif numero_click == 3:
+                coordenadas_cruz.add(posicion_click)
+                coordenadas_cuadrado.discard(posicion_click)
+            
+            set_coordenadas_correctas.add(posicion_click)
+            lista_coordenadas_suspendidas.remove(posicion_click)
         
-    
+        case "borrar":
+            if numero_click == 1:
+                coordenadas_cuadrado.discard(posicion_click)
+            elif numero_click == 3:
+                coordenadas_cruz.discard(posicion_click)
+            
+            lista_coordenadas_suspendidas.remove(posicion_click)
+            
     return set_coordenadas_correctas, lista_coordenadas_suspendidas, coordenadas_cruz, coordenadas_cuadrado
