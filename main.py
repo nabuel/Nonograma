@@ -1,4 +1,3 @@
-import time
 import pygame
 from paquete.funciones_especificas import *
 from graficos.config import *
@@ -24,24 +23,26 @@ longitud_celda = datos[5]
 vidas = 3
 
 #Ordenamiento de datos.
-grilla_jugador = crear_matriz(len(DIBUJO_CORRECTO), len(DIBUJO_CORRECTO))
+grilla_jugador = crear_matriz(len(DIBUJO_CORRECTO), len(DIBUJO_CORRECTO),None)
 grilla_coordenadas = cargar_coordenadas_grilla(grilla_jugador, longitud_celda,(X_INICIO_GRILLA,Y_INICIO_GRILLA))
 lista_coordenadas_cruz = set()
 lista_coordenadas_cuadrado = set()
-coordenadas_suspendidas = []
 coordenadas_correctas = set()
-contador = 0
-posicion_mouse_suspendida = None
-# pistas_columna = obtener_pistas_columnas(DIBUJO_CORRECTO)
-dibujar_cuadrado = dibujar("cuadrado")
+estado = None
 
+
+
+dibujar_cuadrado = dibujar("cuadrado")
+fila_columna_error_actual = None
 
 #Configuración del reloj.
 reloj = pygame.time.Clock()
-# DELAY = 3000
-# SIN_TIEMPO = pygame.USEREVENT + 1
-# pygame.time.set_timer(SIN_TIEMPO, 0)
-# tiempo_inicial = 0
+DELAY = 3000  # 3 segundos de delay para celda incorrecta
+
+tiempo_transcurrido = 0
+tiempo_inicial = None
+sin_tiempo = False
+
 
 
 
@@ -56,46 +57,63 @@ while activo:
         if evento.type == pygame.MOUSEBUTTONDOWN:
             posicion_mouse = pygame.mouse.get_pos()
 
-            #Si la posición del mouse está dentro de la grilla. 
+            #Si la posición del mouse está dentro de la grilla.
+            
             if validar_click_grilla(posicion_mouse):
                 posicion_mouse = calcular_inicio_cuadrado(posicion_mouse, longitud_celda, (X_INICIO_GRILLA,Y_INICIO_GRILLA))
                 valor_click = evento.button
                 if valor_click == 1 or valor_click == 3:
-                    match definir_estado_click(posicion_mouse, grilla_jugador, longitud_celda, valor_click, DIBUJO_CORRECTO, coordenadas_correctas):
+                    estado = definir_estado_click(posicion_mouse, grilla_jugador, longitud_celda, valor_click, DIBUJO_CORRECTO,coordenadas_correctas)
+                    
+                    match estado:
                         case "correcto":
-                            datos_click = manejar_click(valor_click, "correcto", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado, posicion_mouse)
-
-                        case "incorrecto":
-                            #Acá inicia el contador de 3 segundos.
-                            
-                            datos_click = manejar_click(valor_click, "incorrecto", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado,posicion_mouse)
-
-                        case "revertir":
-                            datos_click = manejar_click(valor_click, "revertir", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado,posicion_mouse)
-                            
-                            #PARAR CONTADOR DE 3 SEGUNDOS
+                            datos_click = manejar_click(valor_click, "correcto", coordenadas_correctas, lista_coordenadas_cruz, lista_coordenadas_cuadrado, posicion_mouse)
+                            fila,columna = convertir_coordenadas_matriz(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
                             
                             if valor_click == 1:
-                                grilla_jugador[posicion_mouse_suspendida[1]][posicion_mouse_suspendida[0]] = 0
+                                grilla_jugador[fila][columna] = 1
                             elif valor_click == 3:
-                                grilla_jugador[posicion_mouse_suspendida[1]][posicion_mouse_suspendida[0]] = 1
-                                
-                        case "borrar":
-                            fila,columna = convertir_coordenadas(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
+                                grilla_jugador[fila][columna] = 0
                             
-                            #PARAR CONTADOR DE 3 SEGUNDOS
+                            tiempo_inicial = 0
+                            tiempo_transcurrido = 0
+                            if fila_columna_error_actual != None:
+                                fila,columna = fila_columna_error_actual
+
                             
-                            grilla_jugador[fila][columna] = False
+                        case "incorrecto":
+                            datos_click = manejar_click(valor_click, "incorrecto", coordenadas_correctas, lista_coordenadas_cruz, lista_coordenadas_cuadrado,posicion_mouse)
+                            
+                            print(lista_coordenadas_cruz)
+                            print(lista_coordenadas_cuadrado)
+                            
+                            fila, columna = convertir_coordenadas_matriz(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
+                            grilla_jugador = pintar_casilla(grilla_jugador, (fila,columna),invertir_cuadrado(valor_click))
+                            if posicion_mouse not in coordenadas_correctas:
+                                vidas -= 1
+                                grilla_jugador = pintar_casilla(grilla_jugador, (fila,columna),invertir_cuadrado(valor_click))
+                                lista_coordenadas_cruz, lista_coordenadas_cuadrado = arreglar_coordenadas_pygame(valor_click, posicion_mouse,lista_coordenadas_cruz,lista_coordenadas_cuadrado)
+                                print(f"Casilla incorrecta. Pierdes una vida. Vidas restantes: {vidas}")
+                            print("-------------------------------")
+                            print(lista_coordenadas_cruz)
+                            print(lista_coordenadas_cuadrado)
+                            
+                            print(f"No se puede marcar una casillas ")
 
-                            datos_click = manejar_click(valor_click, "borrar", coordenadas_correctas, coordenadas_suspendidas, lista_coordenadas_cruz, lista_coordenadas_cuadrado,posicion_mouse)
-
-                    coordenadas_correctas = datos_click[0]
-                    coordenadas_suspendidas = datos_click[1]
-                    lista_coordenadas_cruz = datos_click[2]
-                    lista_coordenadas_cuadrado = datos_click[3]
+                        case _:
+                            pass
+                            
                     
-            
+        if chequear_dibujo_terminado(grilla_jugador, DIBUJO_CORRECTO):
+            print("¡Felicidades! Has completado el nonograma.")
+            activo = False
+        
     VENTANA.fill(GRIS)
+
+    
+    if vidas == 0:
+        print("Juego terminado. No te quedan vidas.")
+        activo = False
     
     
     dibujar_cuadrado((ANCHO_GRILLA, ALTO_GRILLA), (X_INICIO_GRILLA, Y_INICIO_GRILLA), BLANCO, VENTANA)
@@ -118,6 +136,8 @@ while activo:
 
     funcion = dibujar("linea horizontal")
     dibujar_lineas((X_INICIO_GRILLA,Y_INICIO_GRILLA), datos[5],len(datos[0]),NEGRO,VENTANA,funcion,True)
+    
+
     
     pygame.display.update()
 

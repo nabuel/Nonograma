@@ -7,11 +7,16 @@ def chequear_casilla(matriz_correcta: list,
                      dibujo: list)-> bool:
     '''
     Chequea si la casilla marcada es correcta.
+    
+    Parametros: "matriz_correcta" -> La matriz correcta del nonograma.
+                "coordenadas" -> Las coordenadas a chequear.
+                "dibujo" -> La matriz del jugador.
 
     Retorno: True si es correcta.
              False si no lo es.
     '''
-    if matriz_correcta[coordenadas[0]][coordenadas[1]] == dibujo[coordenadas[0]][coordenadas[1]]:
+    fila, columna = coordenadas
+    if matriz_correcta[fila][columna] == dibujo[fila][columna]:
         return True
     return False
 
@@ -20,16 +25,26 @@ def chequear_dibujo_terminado(dibujo: list,
                              respuesta: list)-> bool:
     '''
     Chequea si el dibujo fué completado correctamente.
+    
+    Parametros: "dibujo" -> La matriz del jugador.
+                "respuesta" -> La matriz correcta del nonograma.
 
     Retorno: True si fué completado correctamente.
              False si no fué completado correctamente.
     '''
-    for i in range(len(dibujo)):
-        for j in range(len(dibujo[i])):
-            if dibujo[i][j] != respuesta[i][j]:
-                return False
+    contador_respuesta = 0
+    contador = 0
     
-    return True
+    for i in range(len(dibujo)):
+        contador_respuesta += respuesta[i].count(1)
+        for j in range(len(dibujo[i])):
+            if dibujo[i][j] == 1 and respuesta[i][j] == 1:
+                contador += 1
+    
+    if contador_respuesta == contador:
+        return True
+    else:
+        return False
 
 
 def get_coordenada(mensaje_fila: str,
@@ -37,6 +52,10 @@ def get_coordenada(mensaje_fila: str,
                    matriz:list)-> tuple:
     '''
     Obtiene una coordenada para una matriz.
+    
+    Parametros: "mensaje_fila" -> El mensaje para pedir la fila.
+                "mensaje_columna" -> El mensaje para pedir la columna.
+                "matriz" -> La matriz donde se van a usar las coordenadas.
 
     Retorno: una tupla con las coordenas obtenidas.
     '''
@@ -55,6 +74,10 @@ def validar_coordenada(fila: int,
                        matriz: list)-> bool:
     '''
     Valida si la coordenada existe dentro de la matriz.
+    
+    Parametros: "fila" -> La fila a validar.
+                "columna" -> La columna a validar.
+                "matriz" -> La matriz donde se van a validar las coordenadas.
 
     Retorno: True si son válidas.
              False si no lo son.
@@ -70,6 +93,8 @@ def validar_coordenada(fila: int,
 def obtener_dibujo(lista_rutas: list)-> list:
     '''
     Obtiene un dibujo al azar.
+    
+    Parametros: "lista_rutas" -> La lista con las rutas de los dibujos.
 
     Retorno: el dibujo seleccionado
     '''
@@ -82,6 +107,8 @@ def obtener_dibujo(lista_rutas: list)-> list:
 def validar(tipo: str)-> any:
     '''
     Hace la validación según el tipo ingresado.
+    
+    Parametros: "tipo" -> El tipo de validación a realizar.
 
     Retorno: la función elegida.
     '''
@@ -99,6 +126,8 @@ def validar(tipo: str)-> any:
 def obtener_dato(tipo: str)->any:
     '''
     Busca la función para obtener el tipo de dato.
+    
+    Parametros: "tipo" -> El tipo de dato a obtener.
 
     Retorno: La función seleccionada.
     '''
@@ -121,6 +150,10 @@ def chequear_final(dibujo: list,
     '''
     Chequea si se sigue jugando o no.
 
+    Parametros: "dibujo" -> La matriz del jugador.
+                "vidas" -> Las vidas que le quedan al jugador.
+                "respuesta" -> La matriz correcta del nonograma.
+    
     Retorno: True si se sigue jugando.
              False si no se sigue jugandno.
     '''
@@ -137,12 +170,16 @@ def chequear_final(dibujo: list,
     return seguir_jugando
 
 
-def validar_click_grilla(posicion_mouse):
+def validar_click_grilla(posicion_mouse: tuple)-> bool:
     '''
     Verifica si la coordenada del mouse está dentro de la grilla del Nonograma.
+    
+    Parametros: "posicion_mouse" -> La posición del mouse.
+    
+    Retorno: True si está dentro de la grilla.
+             False si no lo está.
     '''
-    x = posicion_mouse[0]
-    y = posicion_mouse[1]
+    x,y = posicion_mouse
     bandera = True
 
     if x < X_INICIO_GRILLA or x > X_INICIO_GRILLA + ANCHO_GRILLA - 2:

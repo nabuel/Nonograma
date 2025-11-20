@@ -11,6 +11,10 @@ def pintar_casilla(dibujo: list,
     '''
     Pinta la casilla ubicada en las coordenadas de fila y columna.
 
+    Parametros: "dibujo" -> dibujo donde se pintará la casilla.
+                "coordenada" -> coordenada de la casilla a pintar.
+                "valor" -> valor con el cual se pintará la casilla.
+    
     Retorno: El dibujo con la casilla pintada.
     '''
     fila = coordenada[0]
@@ -80,6 +84,12 @@ def dibujar_linea_horizontal(inicio: tuple,
                              superficie: any)-> None:
     '''
     Dibuja una linea vertical en Pygame.
+    
+    Parametros: "inicio"-> Punto de inicio de la linea.
+                "aumento"-> es el valor por el cual el eje x irá aumentando.
+                "repeticiones" -> la cantidad de veces que se ejecutará el proceso.
+                "color" -> color de la linea.   
+                "superficie"-> la superficie donde será pintada las lineas.
     '''
     x= inicio[0]
     y = inicio[1]
@@ -95,9 +105,14 @@ def dibujar_linea_horizontal(inicio: tuple,
 def dibujar_cuadrado_pygame(medidas:tuple,
                      coordenada_inicio: tuple,
                      color: tuple,
-                     superficie: any):
+                     superficie: any)-> None:
     '''
     Dibuja un cuadrado en la posición indicada con Pygame.
+    
+    Parámetros: "medidas"-> Son las medidas del cuadrado por ejemplo (40,40)
+                "coordenada_inicio" -> es la coordenada de la punta superior izquierda del cuadrado.
+                "color" -> color del cuadrado.
+                "superficie"-> la superficie donde será pintado el cuadrado.
     '''
     pygame.draw.rect(superficie,color,(coordenada_inicio[0],coordenada_inicio[1],medidas[0], medidas[1]))
 
@@ -117,8 +132,7 @@ def dibujar_cuadrados_pygame(medidas_cuadrado:tuple,
                 "superficie"-> la superficie donde será pintado el cuadrado.
                 "aumento"-> es el valor por el cual los ejes irán aumentado.
     '''
-    x = coordenada_inicio[0]
-    y = coordenada_inicio[1]
+    x,y = coordenada_inicio
 
     for i in range(repeticiones):
         for j in range(repeticiones):
@@ -137,10 +151,8 @@ def dibujar_cuadrados_especificos(lista_coordenadas: list,
 
     PARAMETROS: "lista_coordenadas" -> es una lista que contiene las coordendas de los cuadrados especificos a pintar.
                 "medidas_cuadrado" -> Son las medidas del cuadrado
-                "coordenada_inicio" -> es la coordenada de la punta superior izquierda del cuadrado.
                 "color" -> color del cuadrado.
                 "superficie" -> la superficie donde será pintado el cuadrado.
-                "aumento" -> es el valor por el cual los ejes irán aumentado.
     '''
     for coordenada in lista_coordenadas:
         dibujar_cuadrado_pygame(medidas_cuadrado,(coordenada[0],coordenada[1]),color,superficie)
@@ -155,6 +167,8 @@ def calcular_inicio_cuadrado(posicion_click: tuple,
     PARAMETROS: "posicion_click" -> coordenada donde se cliqueó.
                 "aumento" -> la longitud del cuadrado.
                 "coordenda_inicial" -> coordenda donde se inició la grilla.
+    
+    RETORNO: La coordenada de inicio del cuadrado.
     '''
     x = posicion_click[0]
     x_inicio = coordenada_inicial[0]
@@ -217,7 +231,7 @@ def convertir_coordenada(coordenada: tuple,
     return -1
 
 
-def convertir_coordenadas(coordenada: tuple, 
+def convertir_coordenadas_matriz(coordenada: tuple, 
                         coordenada_inicial: tuple, 
                         aumento: int, 
                         matriz: list)->tuple:
@@ -244,7 +258,14 @@ def mostrar_pistas_filas_pygame(lista_pistas: tuple,
                         color: tuple,
                         aumento: int)-> None:
     '''
-    Muestra la pista en Pygame.
+    Muestra las pistas de las filas en Pygame.
+    
+    PARAMETROS: "lista_pistas" -> es una lista que contiene las pistas de las filas.
+                "coordenadas" -> coordenada donde se empezarán a dibujar las pistas.
+                "superficie" -> la superficie donde será pintado el cuadrado.
+                "fuente" -> fuente para escribir las pistas.
+                "color" -> color de las pistas.
+                "aumento" -> es el valor por el cual los ejes irán aumentado.
     '''
     y = coordenadas[1]
     y = y + dividir(aumento,2)
@@ -271,7 +292,14 @@ def mostrar_pistas_columnas_pygame(lista_pistas: tuple,
                         color: tuple,
                         aumento: int)-> None:
     '''
-    Muestra las pistas en Pygame.
+    Muestra las pistas de las columnas en Pygame.
+    
+    Parametros: "lista_pistas" -> es una lista que contiene las pistas de las columnas.
+                "coordenadas" -> coordenada donde se empezarán a dibujar las pistas.
+                "superficie" -> la superficie donde será pintado el cuadrado.
+                "fuente" -> fuente para escribir las pistas.
+                "color" -> color de las pistas.
+                "aumento" -> es el valor por el cual los ejes irán aumentado.
     '''
     funcion = dividir
     x = coordenadas[0]
@@ -294,6 +322,8 @@ def mostrar_pistas_columnas_pygame(lista_pistas: tuple,
 def ordenar_ranking(ranking: list):
     '''
     Ordena el ranking de mayor a menor.
+    
+    Parametros: "ranking" -> matriz que contiene el ranking de los jugadores.
 
     Retorno: El ranking ordenado.
     '''
@@ -317,6 +347,9 @@ def mostrar_ranking(ruta: str,
                     limite: int)-> None:
     '''
     Muestra los primeros 10 jugadores del ranking.
+    
+    Parametros: "ruta" -> ruta del archivo csv donde se encuentra el ranking.
+                "limite" -> límite de jugadores a mostrar.
     '''
     matriz = convertir_csv_matriz(ruta)
 
@@ -327,10 +360,6 @@ def mostrar_ranking(ruta: str,
             distancia = len(matriz[0][0]) // 2
             print(matriz[i][j],"" * distancia, end="")
         print("")
-
-
-
-
 
 
 def dibujar_cruces_especificas(lista_coordenadas: list,
@@ -382,13 +411,12 @@ def dibujar_cruz_pygame(inicio: tuple,
     
     PARAMETROS: "inicio"-> Punto de inicio de la cruz.
                 "color" -> color de la cruz.
-                "superficie"-> la superficie donde será pintado la cruz.
                 "longitud_cruz"-> longitud de la cruz.
+                "superficie"-> la superficie donde será pintado la cruz.
     '''
-    x = inicio[0]
-    y = inicio[1]
+    x,y = inicio
     
-        #DIBUJA UNA LINEA DE LA ESQUINA SUPERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA INFERIOR DERECHA.
+    #DIBUJA UNA LINEA DE LA ESQUINA SUPERIOR IZQUIERDA DEL CUADRADO A LA ESQUINA INFERIOR DERECHA.
     pygame.draw.line(superficie, 
                         color,
                         (x, y),(x + longitud_cruz,y+longitud_cruz),3)
@@ -438,42 +466,39 @@ def definir_estado_click(posicion_click: tuple,
                 "grilla_jugador" -> grilla lógica del jugador.
                 "longitud_casilla" -> logitud de las casillas para calcular las coordenadas.
                 "numero_click" -> número del click realizado (1 = izquierdo, 3 = derecho).
+                "grilla_correcta" -> grilla lógica correcta del nonograma.
+                "coordenadas_correctas" -> conjunto de coordenadas correctas.
     
     RETORNO: El estado del click (correcto, incorrecto, revertir).
     '''
     #click izquierdo
-    fila,columna = convertir_coordenadas(posicion_click, (X_INICIO_GRILLA,Y_INICIO_GRILLA), longitud_casilla,grilla_jugador)
-    if numero_click == 1:
-        
-        if grilla_jugador[fila][columna] == 1 and (posicion_click not in coordenadas_correctas):
-            estado = "borrar"
-        elif grilla_jugador[fila][columna] == 0 and (posicion_click not in coordenadas_correctas):
-            estado = "revertir"
-        elif grilla_correcta[fila][columna] == 1:
-            estado = "correcto"
-        elif grilla_correcta[fila][columna] == 0:
-            estado = "incorrecto"
+    fila,columna = convertir_coordenadas_matriz(posicion_click, (X_INICIO_GRILLA,Y_INICIO_GRILLA), longitud_casilla,grilla_jugador)
+    celda_jugador = grilla_jugador[fila][columna]
+    celda_correcta = grilla_correcta[fila][columna]
     
-    elif numero_click == 3:
-        
-        if grilla_jugador[fila][columna] == 0 and (posicion_click not in coordenadas_correctas):
-            estado = "borrar"
-        elif grilla_jugador[fila][columna] == 1 and (posicion_click not in coordenadas_correctas):
-            estado = "revertir"
-        elif grilla_correcta[fila][columna] == 0:
-            estado = "correcto"
-        elif grilla_correcta[fila][columna] == 1:
-            estado = "incorrecto"
-    
+    estado = ""
+    match numero_click:
+        case 1:
+            if celda_correcta == 1:
+                estado = "correcto"
+            elif celda_correcta == 0 and celda_jugador not in coordenadas_correctas:
+                estado = "incorrecto"
+
+        case 3:    
+                if celda_correcta == 0:
+                    estado = "correcto"
+                elif celda_correcta == 1 and celda_jugador not in coordenadas_correctas:
+                    estado = "incorrecto"
+
+            
     return estado
-    
-        
+
+
 def manejar_click(numero_click: int,
                  estado_click: str,
                  set_coordenadas_correctas: set,
-                 lista_coordenadas_suspendidas: list,
-                 coordenadas_cruz: set,
-                 coordenadas_cuadrado: set,
+                 set_coordenadas_cruz: set,
+                 set_coordenadas_cuadrado: set,
                  posicion_click: tuple)-> tuple:
     '''
     Maneja el click realizado por el jugador.
@@ -481,49 +506,87 @@ def manejar_click(numero_click: int,
     PARAMETROS: "numero_click" -> número del click realizado (1 = izquierdo, 3 = derecho).
                 "estado_click" -> el estado del click (correcto, incorrecto, revertir).
                 "set_coordenadas_correctas" -> conjunto de coordenadas correctas.
-                "lista_coordenadas_suspendidas" -> lista de coordenadas suspendidas.
-                "coordenadas_cruz" -> conjunto de coordenadas donde se dibuja una cruz.
-                "coordenadas_cuadrado" -> conjunto de coordenadas donde se dibuja un cuadrado.
+                "set_coordenadas_cruz" -> conjunto de coordenadas donde se dibuja una cruz.
+                "set_coordenadas_cuadrado" -> conjunto de coordenadas donde se dibuja un cuadrado.
                 "posicion_click" -> coordenada donde se cliqueó.
+    
+    RETORNO: Los conjuntos de coordenadas actualizados.
     '''
 
     match estado_click:
         case "correcto":
             if numero_click == 1:
-                coordenadas_cuadrado.add(posicion_click)
+                set_coordenadas_cuadrado.add(posicion_click)
+                set_coordenadas_cruz.discard(posicion_click)
+
             elif numero_click == 3:
-                coordenadas_cruz.add(posicion_click)
-                
+                set_coordenadas_cuadrado.discard(posicion_click)
+                set_coordenadas_cruz.add(posicion_click)
+
             set_coordenadas_correctas.add(posicion_click)
         case "incorrecto":
-            if numero_click == 1:
-                if lista_coordenadas_suspendidas.count(posicion_click) == 0:
-                    lista_coordenadas_suspendidas.append(posicion_click)
-    
-                coordenadas_cuadrado.add(posicion_click)
-            elif numero_click == 3:
-                if lista_coordenadas_suspendidas.count(posicion_click) == 0:
-                    lista_coordenadas_suspendidas.append(posicion_click)
-                
-                coordenadas_cruz.add(posicion_click)
-                
-        case "revertir":
-            if numero_click == 1:
-                coordenadas_cruz.discard(posicion_click)
-                coordenadas_cuadrado.add(posicion_click)
-            elif numero_click == 3:
-                coordenadas_cruz.add(posicion_click)
-                coordenadas_cuadrado.discard(posicion_click)
-            
-            set_coordenadas_correctas.add(posicion_click)
-            lista_coordenadas_suspendidas.remove(posicion_click)
+            if posicion_click not in set_coordenadas_correctas:
+                if numero_click == 1:
+                    set_coordenadas_cuadrado.add(posicion_click)
+                elif numero_click == 3:
+                    set_coordenadas_cruz.add(posicion_click)
         
-        case "borrar":
-            if numero_click == 1:
-                coordenadas_cuadrado.discard(posicion_click)
-            elif numero_click == 3:
-                coordenadas_cruz.discard(posicion_click)
-            
-            lista_coordenadas_suspendidas.remove(posicion_click)
-            
-    return set_coordenadas_correctas, lista_coordenadas_suspendidas, coordenadas_cruz, coordenadas_cuadrado
+    return set_coordenadas_correctas, set_coordenadas_cruz, set_coordenadas_cuadrado
+
+
+def buscar_casilla_erronea(matriz_jugador: list,
+                           matriz_correcta: list)-> tuple |None:
+    '''
+    Busca una casilla erronea en la grilla del jugador.
+    
+    PARAMETROS: "matriz_jugador" -> grilla lógica del jugador.
+                "matriz_correcta" -> grilla lógica correcta del nonograma.
+
+    Retorno: La fila y columna de la casilla erronea. En caso de no encontrar ninguna retorna None.
+    '''
+    for i in range(len(matriz_jugador)):
+        for j in range(len(matriz_jugador[i])):
+            if matriz_jugador[i][j] != None:
+                if matriz_jugador[i][j] != matriz_correcta[i][j]:
+                    return i,j
+    
+    return None
+
+
+def invertir_cuadrado(valor_click: int)-> int:
+    '''
+    Invierte el valor del cuadrado.
+    
+    PARAMETROS: "valor_click" -> valor del click realizado (1 = izquierdo, 3 = derecho).
+
+    Retorno: El valor invertido.
+    '''
+    if valor_click == 1:
+        return 0
+    elif valor_click == 3:
+        return 1
+    
+
+def arreglar_coordenadas_pygame(valor_click: int,
+                              posicion_click: tuple,
+                              set_coordenadas_cruz: set,
+                              set_coordenadas_cuadrado: set)-> tuple:
+    '''
+    Arregla las listas de coordenadas según el click realizado.
+    
+    Parametros: "valor_click" -> valor del click realizado (1 = izquierdo, 3 = derecho).
+                "posicion_click" -> coordenada donde se cliqueó.
+                "set_coordenadas_cruz" -> conjunto de coordenadas donde se dibuja una cruz.
+                "set_coordenadas_cuadrado" -> conjunto de coordenadas donde se dibuja un cuadrado.
+
+    Retorno: Las listas arregladas.
+    '''
+    match valor_click:
+        case 1:
+            set_coordenadas_cuadrado.discard(posicion_click)
+            set_coordenadas_cruz.add(posicion_click)
+        case 3:
+            set_coordenadas_cuadrado.add(posicion_click)
+            set_coordenadas_cruz.discard(posicion_click)
+    
+    return set_coordenadas_cruz, set_coordenadas_cuadrado

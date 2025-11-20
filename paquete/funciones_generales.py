@@ -1,5 +1,8 @@
 def mostrar_matriz(matriz: list)-> None:
     '''
+    Descripción: Imprime en la consola una matriz (lista de listas) formateada, fila por fila.
+
+    Parámetros: matriz (la lista de listas a imprimir).
     '''
     #i es el índice de las filas
     for i in range(len(matriz)):
@@ -13,9 +16,15 @@ def crear_matriz(filas: int,
                  columnas: int,
                  valor = False)->list:
     '''
-    Crea una matriz de las dimensiones indicadas.
+    Descripción: Genera una nueva matriz de las dimensiones especificadas, inicializando cada celda con el valor dado.
 
-    Retorno: la matriz creada.
+    Parámetros: filas : Un entero que determina la cantidad de sub-listas que contendrá la lista principal (la dimensión vertical).
+
+                columnas : Un entero que define cuántos elementos tendrá cada sub-lista (la dimensión horizontal).
+
+                valor : El dato inicial (puede ser int, None, bool, etc.) que se replicará en cada una de las posiciones de la estructura generada.
+
+    Retorno: La matriz creada.
     '''
 
     matriz= []
@@ -29,6 +38,8 @@ def crear_matriz(filas: int,
 def convertir_csv_matriz(ruta: str)-> list:
     '''
     Convierte el archivo csv a una matriz.
+    
+    Parametros: ruta ->  Una cadena de texto con la dirección relativa o absoluta del archivo en disco. La función utiliza esto para abrir el flujo de lectura del archivo.
 
     Retorno: La matriz con el contenido del archivo.
     '''
@@ -55,6 +66,10 @@ def extraer_columna(matriz: list,
                     columna: int)-> list:
     '''
     Pasa las columnas de la matriz a una lista.
+    
+    Parametros: matriz -> La estructura de datos origen de la cual se obtendrán los datos.
+
+                columna -> El índice numérico que indica la posición fija a leer dentro de cada sub-lista de la matriz.
 
     Retorno: el valor de la columna como una fila
     '''
@@ -68,6 +83,8 @@ def get_binario(mensaje: str)-> int:
     '''
     Obtiene un número binario.
 
+    Parámetros: mensaje -> El mensaje que se le mostrará al usuario para solicitar el número.
+    
     Retorno: El número obtenido.
     '''
     numero = input(mensaje)
@@ -82,6 +99,8 @@ def get_int(mensaje: str)-> int:
     '''
     Consigue un número entero positivo.
 
+    Parámetros: mensaje -> El mensaje que se le mostrará al usuario para solicitar el número.
+    
     Retorno: el número entero conseguido.
     '''
     numero = input(mensaje)
