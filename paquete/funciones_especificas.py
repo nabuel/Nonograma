@@ -1,9 +1,7 @@
-
-from webbrowser import get
 from .validaciones import *
 from .funciones_generales import *
 from .calculos import *
-# import Pygame
+import pygame
 
 
 def pintar_casilla(dibujo: list,
@@ -328,16 +326,17 @@ def ordenar_ranking(ranking: list):
 
     Retorno: El ranking ordenado.
     '''
+
     lista = []
     for i in range(1,len(ranking)):
-        lista.append(ranking[i][2])
+        lista.append(ranking[i][3])
     
     lista.sort(reverse=True)
 
     ranking_retorno = []
     for elemento in lista:
         for i in range(1, len(ranking)):
-            if elemento == ranking[i][2]:
+            if elemento == ranking[i][3]:
                 ranking_retorno.append(ranking[i])
                 break
     
@@ -610,7 +609,7 @@ def jugar_nonograma_pygame(ventana: any, icono: any, imagen_fondo: any)-> tuple:
     ventana.blit(imagen_fondo, (0, 0))
 
     #Configuración nonograma.
-    rutas = ["Nonograma/archivos/auto.csv","Nonograma/archivos/buho.csv","Nonograma/archivos/cara_feliz.csv","Nonograma/archivos/gato.csv","Nonograma/archivos/inodoro.csv","Nonograma/archivos/hongo_malo.csv"]
+    rutas = ["archivos/auto.csv","archivos/buho.csv","archivos/cara_feliz.csv","archivos/gato.csv","archivos/inodoro.csv","archivos/hongo_malo.csv"]
     datos = calcular_datos_nonograma(rutas)
     DIBUJO_CORRECTO = datos[0]
     longitud_celda = datos[5]
@@ -624,7 +623,7 @@ def jugar_nonograma_pygame(ventana: any, icono: any, imagen_fondo: any)-> tuple:
     coordenadas_correctas = set()
     estado = None
     tiempo = 0
-
+    nombre_jugador = ""
 
 
     dibujar_cuadrado = dibujar("cuadrado")
@@ -692,6 +691,11 @@ def jugar_nonograma_pygame(ventana: any, icono: any, imagen_fondo: any)-> tuple:
         # ventana.fill(GRIS)
         if activo != False:
             activo = chequear_final(grilla_jugador, vidas, DIBUJO_CORRECTO)
+            if activo == False and vidas > 0:
+                    tiempo += 10
+                    while nombre_jugador == "":
+                        nombre_jugador = obtener_texto_pygame("Ingrese su nombre: ", ventana)
+                    actualizar_ranking(tiempo, vidas, nombre_jugador)
 
         
         dibujar_cuadrado((ANCHO_GRILLA, ALTO_GRILLA), (X_INICIO_GRILLA, Y_INICIO_GRILLA), BLANCO, ventana)
@@ -719,14 +723,57 @@ def jugar_nonograma_pygame(ventana: any, icono: any, imagen_fondo: any)-> tuple:
         
         pygame.display.update()
 
-    pygame.quit()
     
-    return vidas, tiempo
+    # return vidas, tiempo
 
 
 def actualizar_ranking(tiempo: int,
                        vidas:int,
                        nombre_jugador: str)-> None:
     '''
-    Actualiza el ranking con la vida y 
+    Actualiza el ranking con la vidas, el tiempo obtenidos y los puntos obtenidos junto con el nombre del jugador.
+    
+    PARAMETROS: "tiempo" -> tiempo obtenido en el nonograma.
+                "vidas" -> vidas obtenidas en el nonograma.
+                "nombre_jugador" -> nombre del jugador.
     '''
+    ranking = convertir_csv_matriz("archivos/ranking.csv")
+    puntuacion = calcular_puntuacion(tiempo, vidas)
+    ranking.append([nombre_jugador, tiempo, vidas, puntuacion])
+    ranking_ordenado = ordenar_ranking(ranking)
+    escribir_csv("archivos/ranking.csv", ranking_ordenado, ["Nombre", "Tiempo", "Vidas", "Puntuacion"])
+
+
+def obtener_texto_pygame(mensaje: str, ventana: any)-> str:
+    '''
+    Obtiene un texto utilizando Pygame.
+    
+    Parametros: mensaje -> El mensaje que se le mostrará al usuario para solicitar el texto.
+    
+    Retorno: El texto obtenido.
+    '''
+    funcion = dibujar("cuadrado")
+    cuadrado = funcion((ANCHO_GRILLA /2 , ALTO_GRILLA/2), (X_INICIO_GRILLA, Y_INICIO_GRILLA), GRIS, ventana)
+    cuadrado.blit(mensaje, (ANCHO_GRILLA /2 , ALTO_GRILLA/2))
+    fuente = pygame.font.SysFont("Roboto", 10)
+    texto = fuente.render(mensaje,True, NEGRO)
+    pygame.init()
+    
+    ventana.blit(texto, (ANCHO_GRILLA /2 , ALTO_GRILLA/2))
+    activo = True
+    pygame.draw.rect(ventana, BLANCO, (ANCHO_GRILLA /2 , ALTO_GRILLA/2, 100, 50))
+    while activo:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_RETURN:
+                    texto_ingresado = texto_ingresado[0:-1]
+                elif evento.key == pygame.K_BACKSPACE:
+                    texto_ingresado = texto_ingresado[0:-1]
+                    activo = False
+                else:
+                    texto_ingresado += evento.unicode
+    pygame.display.update()
+    
+    return texto_ingresado 

@@ -116,7 +116,7 @@ def calcular_datos_nonograma(rutas: list)-> tuple:
 
     medida_casillas = calcular_medida_celda(dibujo_jugador,(ANCHO_GRILLA, ALTO_GRILLA))
     
-    fuente = pygame.font.SysFont(None, int(medida_casillas[0]//2))
+    fuente = pygame.font.SysFont("Roboto", int(medida_casillas[0]//2) + 3)
 
     pistas_fila = calcular_pistas_filas(dibujo_jugador)
 
