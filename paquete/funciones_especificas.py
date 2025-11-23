@@ -592,139 +592,7 @@ def arreglar_coordenadas_pygame(valor_click: int,
     return set_coordenadas_cruz, set_coordenadas_cuadrado
 
 
-def jugar_nonograma_pygame(ventana: any, icono: any, imagen_fondo: any)-> tuple:
-    '''
-    Ejecuta el juego del nonograma utilizando Pygame.
-    
-    Retorno: si ganó o perdió el jugador. Y la puntuación obtenida.
-    '''
-    pygame.init()
-    activo = True
 
-
-    #Configuración pantalla
-
-    pygame.display.set_caption("Nonograma")
-    pygame.display.set_icon(icono)
-    ventana.blit(imagen_fondo, (0, 0))
-
-    #Configuración nonograma.
-    rutas = ["archivos/auto.csv","archivos/buho.csv","archivos/cara_feliz.csv","archivos/gato.csv","archivos/inodoro.csv","archivos/hongo_malo.csv"]
-    datos = calcular_datos_nonograma(rutas)
-    DIBUJO_CORRECTO = datos[0]
-    longitud_celda = datos[5]
-    vidas = 3
-
-    #Ordenamiento de datos.
-    grilla_jugador = crear_matriz(len(DIBUJO_CORRECTO), len(DIBUJO_CORRECTO),None)
-    grilla_coordenadas = cargar_coordenadas_grilla(grilla_jugador, longitud_celda,(X_INICIO_GRILLA,Y_INICIO_GRILLA))
-    lista_coordenadas_cruz = set()
-    lista_coordenadas_cuadrado = set()
-    coordenadas_correctas = set()
-    estado = None
-    tiempo = 0
-    nombre_jugador = ""
-
-
-    dibujar_cuadrado = dibujar("cuadrado")
-    fila_columna_error_actual = None
-
-
-    while activo:
-
-        for evento in pygame.event.get():
-
-            if evento.type == pygame.QUIT:
-                print("Se tocó cerrar")
-                activo = False
-            
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-                posicion_mouse = pygame.mouse.get_pos()
-
-                #Si la posición del mouse está dentro de la grilla.
-                
-                if validar_click_grilla(posicion_mouse):
-                    posicion_mouse = calcular_inicio_cuadrado(posicion_mouse, longitud_celda, (X_INICIO_GRILLA,Y_INICIO_GRILLA))
-                    valor_click = evento.button
-                    if valor_click == 1 or valor_click == 3:
-                        estado = definir_estado_click(posicion_mouse, grilla_jugador, longitud_celda, valor_click, DIBUJO_CORRECTO,coordenadas_correctas)
-                        
-                        match estado:
-                            case "correcto":
-                                datos_click = manejar_click(valor_click, "correcto", coordenadas_correctas, lista_coordenadas_cruz, lista_coordenadas_cuadrado, posicion_mouse)
-                                fila,columna = convertir_coordenadas_matriz(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
-                                
-                                if valor_click == 1:
-                                    grilla_jugador[fila][columna] = 1
-                                elif valor_click == 3:
-                                    grilla_jugador[fila][columna] = 0
-                                
-
-                                if fila_columna_error_actual != None:
-                                    fila,columna = fila_columna_error_actual
-
-                                
-                            case "incorrecto":
-                                datos_click = manejar_click(valor_click, "incorrecto", coordenadas_correctas, lista_coordenadas_cruz, lista_coordenadas_cuadrado,posicion_mouse)
-                                
-                                print(lista_coordenadas_cruz)
-                                print(lista_coordenadas_cuadrado)
-                                
-                                fila, columna = convertir_coordenadas_matriz(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
-                                grilla_jugador = pintar_casilla(grilla_jugador, (fila,columna),invertir_cuadrado(valor_click))
-                                if posicion_mouse not in coordenadas_correctas:
-                                    vidas -= 1
-                                    grilla_jugador = pintar_casilla(grilla_jugador, (fila,columna),invertir_cuadrado(valor_click))
-                                    lista_coordenadas_cruz, lista_coordenadas_cuadrado = arreglar_coordenadas_pygame(valor_click, posicion_mouse,lista_coordenadas_cruz,lista_coordenadas_cuadrado)
-                                    print(f"Casilla incorrecta. Pierdes una vida. Vidas restantes: {vidas}")
-                                print("-------------------------------")
-                                print(lista_coordenadas_cruz)
-                                print(lista_coordenadas_cuadrado)
-                                
-                                print(f"No se puede marcar una casillas ")
-
-                            case _:
-                                pass
-                                
-
-            
-        # ventana.fill(GRIS)
-        if activo != False:
-            activo = chequear_final(grilla_jugador, vidas, DIBUJO_CORRECTO)
-            if activo == False and vidas > 0:
-                    tiempo += 10
-                    while nombre_jugador == "":
-                        nombre_jugador = obtener_texto_pygame("Ingrese su nombre: ", ventana)
-                    actualizar_ranking(tiempo, vidas, nombre_jugador)
-
-        
-        dibujar_cuadrado((ANCHO_GRILLA, ALTO_GRILLA), (X_INICIO_GRILLA, Y_INICIO_GRILLA), BLANCO, ventana)
-        
-        
-        mostrar_pistas_filas_pygame(datos[3],(X_INICIO_GRILLA -25,Y_INICIO_GRILLA),ventana,datos[2], NEGRO,datos[5])
-        #DIBUJA LAS PISTAS DE LAS COLUMNAS.
-        mostrar_pistas_columnas_pygame(datos[4],(X_INICIO_GRILLA, Y_INICIO_GRILLA - 25), ventana,datos[2],NEGRO,datos[5])
-
-        
-        if len(lista_coordenadas_cuadrado) > 0:
-            dibujar_cuadrados_especificos(lista_coordenadas_cuadrado, datos[1], AZUL, ventana)
-        
-        if len(lista_coordenadas_cruz) > 0:
-            dibujar_cruces_especificas(lista_coordenadas_cruz, datos[5], ROJO, ventana)
-        
-        #DIBUJA LINEAS
-        funcion = dibujar("linea vertical")
-        dibujar_lineas((X_INICIO_GRILLA,Y_INICIO_GRILLA), datos[5],len(datos[0]),NEGRO,ventana,funcion)
-
-        funcion = dibujar("linea horizontal")
-        dibujar_lineas((X_INICIO_GRILLA,Y_INICIO_GRILLA), datos[5],len(datos[0]),NEGRO,ventana,funcion,True)
-        
-
-        
-        pygame.display.update()
-
-    
-    # return vidas, tiempo
 
 
 def actualizar_ranking(tiempo: int,
@@ -752,28 +620,43 @@ def obtener_texto_pygame(mensaje: str, ventana: any)-> str:
     
     Retorno: El texto obtenido.
     '''
-    funcion = dibujar("cuadrado")
-    cuadrado = funcion((ANCHO_GRILLA /2 , ALTO_GRILLA/2), (X_INICIO_GRILLA, Y_INICIO_GRILLA), GRIS, ventana)
-    cuadrado.blit(mensaje, (ANCHO_GRILLA /2 , ALTO_GRILLA/2))
-    fuente = pygame.font.SysFont("Roboto", 10)
-    texto = fuente.render(mensaje,True, NEGRO)
-    pygame.init()
-    
-    ventana.blit(texto, (ANCHO_GRILLA /2 , ALTO_GRILLA/2))
+    texto_ingresado = ""
     activo = True
-    pygame.draw.rect(ventana, BLANCO, (ANCHO_GRILLA /2 , ALTO_GRILLA/2, 100, 50))
+    pygame.init()
     while activo:
         for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
+            if evento.type == evento.QUIT:
                 pygame.quit()
+                
             if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_RETURN:
-                    texto_ingresado = texto_ingresado[0:-1]
-                elif evento.key == pygame.K_BACKSPACE:
-                    texto_ingresado = texto_ingresado[0:-1]
-                    activo = False
-                else:
-                    texto_ingresado += evento.unicode
-    pygame.display.update()
-    
+                mostrar_texto_pygame(mensaje,ventana,(250,700),20)
+                texto_ingresado += pygame.key.set_text_input_rect(pygame.react((X_INICIO_GRILLA, Y_INICIO_GRILLA), 200, 200))
+                
+                if evento.key == pygame.K_ENTER:
+                    pygame.key.stop_text_input()
+                
+        pygame.display.update()
+    #lucas martin vega
     return texto_ingresado 
+
+def mostrar_texto_pygame(texto: str,
+                        superficie: any,
+                        coordenadas_inicio: tuple,
+                        ancho: int)->None:
+    '''
+    Muestra el texto en pygame.
+    
+    PARAMETROS: "texto" -> texto a mostrar.
+                "superficie" -> ventana en la cual se muestra el texto.
+                "coordenadas_inicio" -> ubicación donde se muestra el texto.
+                "ancho" -> que tan grande son las letras.
+    '''
+    fuente = pygame.font.SysFont("Roboto", ancho)
+    superficie_texto = fuente.render(texto, True, NEGRO)
+    rect_texto = superficie_texto.get_rect()
+    
+    rect_texto.topleft = coordenadas_inicio
+    
+    superficie.blit(superficie_texto, rect_texto)
+    
+    
