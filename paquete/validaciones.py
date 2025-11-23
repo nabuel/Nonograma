@@ -159,7 +159,7 @@ def chequear_final(dibujo: list,
     '''
     seguir_jugando = False
     if vidas == 0:
-        print("Te quedaste sin vidas.")
+        print("Juego terminado. No te quedan vidas.")
         print("")
     elif chequear_dibujo_terminado(dibujo, respuesta):
         print("GANASTE!! Completaste correctamente el dibujo.")
