@@ -136,15 +136,3 @@ def escribir_csv(ruta: str,
                     linea += ","
         
             archivo.write(linea + "\n")
-
-def obtener_texto_pygame(mensaje: str, ventana: any)-> str:
-    '''
-    Obtiene un texto utilizando Pygame.
-    
-    Parametros: mensaje -> El mensaje que se le mostrará al usuario para solicitar el texto.
-    
-    Retorno: El texto obtenido.
-    '''
-    
-    texto = input(mensaje)
-    return texto

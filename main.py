@@ -34,29 +34,16 @@ while activo:
             activo = False
         
         if ejecutar == MENU:
-            ejecutar = mostrar_menu(VENTANA, ICONO, FONDO_IMAGEN)
+            ejecutar = mostrar_menu(VENTANA, FONDO_IMAGEN)
         elif ejecutar == JUEGO:
-            estado = jugar_nonograma_pygame(VENTANA, ICONO, FONDO_IMAGEN)
-            vidas, tiempo = estado
+            estado = jugar_nonograma_pygame(VENTANA,FONDO_IMAGEN)
+            vidas, tiempo, nombre = estado
             ejecutar = 1
             if vidas > 0:
-                nombre = obtener_texto_pygame("Ingrese su nombre", VENTANA)
                 actualizar_ranking(tiempo,vidas,nombre)
         elif ejecutar == RANKING:
             mostrar_ranking("archivos/ranking.csv",10)
             ejecutar = 1
-        # if activo:
-        #     pygame.event.post(MENU)
-        #     if estado == "jugar":  # Click izquierdo
-        #         # nombre = obtener_nombre_boton(VENTANA, posicion_mouse)
-        #         # vidas, tiempo = estado
-        #         # if vidas > 0:
-        #         #     tiempo += 10
-        #         #     while nombre_jugador == "":
-        #         #         nombre_jugador = obtener_texto_pygame("Ingrese su nombre: ", VENTANA)
-        #         #     actualizar_ranking(tiempo, vidas, nombre_jugador)
-        #     elif estado == "mostrar ranking":
-        #         pass
             
 
     

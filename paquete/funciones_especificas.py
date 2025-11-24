@@ -593,8 +593,6 @@ def arreglar_coordenadas_pygame(valor_click: int,
 
 
 
-
-
 def actualizar_ranking(tiempo: int,
                        vidas:int,
                        nombre_jugador: str)-> None:
@@ -607,12 +605,14 @@ def actualizar_ranking(tiempo: int,
     '''
     ranking = convertir_csv_matriz("archivos/ranking.csv")
     puntuacion = calcular_puntuacion(tiempo, vidas)
-    ranking.append([nombre_jugador, tiempo, vidas, puntuacion])
+    minutos, segundos = formatear_tiempo(tiempo)
+    tiempo_formateado = f"{minutos}:{segundos}"
+    ranking.append([nombre_jugador, tiempo_formateado, vidas, puntuacion])
     ranking_ordenado = ordenar_ranking(ranking)
     escribir_csv("archivos/ranking.csv", ranking_ordenado, ["Nombre", "Tiempo", "Vidas", "Puntuacion"])
 
 
-def obtener_texto_pygame(mensaje: str, ventana: any)-> str:
+def obtener_texto_pygame(mensaje: str, superficie: any, imagen_fondo: any, fuente: any)-> str:
     '''
     Obtiene un texto utilizando Pygame.
     
@@ -621,23 +621,42 @@ def obtener_texto_pygame(mensaje: str, ventana: any)-> str:
     Retorno: El texto obtenido.
     '''
     texto_ingresado = ""
+    texto_ingresado_rect = pygame.Rect(X_INICIO_GRILLA, Y_INICIO_GRILLA, 200, 200)
     activo = True
     pygame.init()
+    superficie.blit(imagen_fondo,(0,0))
+    dibujar_cuadrado_pygame((300,300),(X_INICIO_GRILLA,Y_INICIO_GRILLA),GRIS, superficie)
+    
     while activo:
         for evento in pygame.event.get():
-            if evento.type == evento.QUIT:
+            if evento.type == pygame.QUIT:
                 pygame.quit()
                 
             if evento.type == pygame.KEYDOWN:
-                mostrar_texto_pygame(mensaje,ventana,(250,700),20)
-                texto_ingresado += pygame.key.set_text_input_rect(pygame.react((X_INICIO_GRILLA, Y_INICIO_GRILLA), 200, 200))
-                
-                if evento.key == pygame.K_ENTER:
-                    pygame.key.stop_text_input()
-                
-        pygame.display.update()
-    #lucas martin vega
+                if evento.key == pygame.K_BACKSPACE:
+                    #Borra el último caracter.
+                    texto_ingresado = texto_ingresado[0:-1]
+                    
+                elif evento.key == pygame.K_RETURN:
+                    activo = False
+                    
+                else:
+                    texto_ingresado += evento.unicode
+
+        
+        mostrar_texto_pygame(mensaje,superficie,(X_INICIO_GRILLA,Y_INICIO_GRILLA),70)
+        pygame.draw.rect(superficie,ROJO,texto_ingresado_rect,2)
+        
+        superficie_texto = fuente.render(texto_ingresado, True, NEGRO)
+        
+        superficie.blit(superficie_texto, 
+                        (texto_ingresado_rect.x,
+                        texto_ingresado_rect.y))
+        
+        pygame.display.flip()
+        
     return texto_ingresado 
+
 
 def mostrar_texto_pygame(texto: str,
                         superficie: any,
@@ -658,5 +677,3 @@ def mostrar_texto_pygame(texto: str,
     rect_texto.topleft = coordenadas_inicio
     
     superficie.blit(superficie_texto, rect_texto)
-    
-    

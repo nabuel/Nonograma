@@ -188,3 +188,22 @@ def validar_click_grilla(posicion_mouse: tuple)-> bool:
         bandera = False
     
     return bandera
+
+
+def formatear_tiempo(milisegundos: int)-> tuple:
+    '''
+    Convierte el tiempo ingresado en minutos y segundos.
+    
+    Parametros: "milisegundos" -> milisegundos a convertir en minutos y segundos.
+    
+    Retorno: Una tupla con minutos, segundos
+    
+    OBSERVACIÓN: En caso de que sobren milisegundos no se van a retornar.
+    '''
+    
+    segundos_totales = milisegundos // 1000
+    
+    minutos_retorno = segundos_totales // 60
+    segundos_retorno = segundos_totales % 60
+    
+    return minutos_retorno, segundos_retorno

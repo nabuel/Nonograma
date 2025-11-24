@@ -3,7 +3,7 @@ from .funciones_especificas import *
 from .funciones_generales import *
 
 
-def jugar_nonograma_pygame(superficie: any, icono: any, imagen_fondo: any)-> tuple:
+def jugar_nonograma_pygame(superficie: any, imagen_fondo: any)-> tuple:
     '''
     Ejecuta el juego del nonograma utilizando Pygame.
     
@@ -14,12 +14,6 @@ def jugar_nonograma_pygame(superficie: any, icono: any, imagen_fondo: any)-> tup
     pygame.init()
     activo = True
 
-
-    #Configuración pantalla
-
-    pygame.display.set_caption("Nonograma")
-    pygame.display.set_icon(icono)
-    superficie.blit(imagen_fondo, (0, 0))
 
     #Configuración nonograma.
     rutas = ["archivos/auto.csv","archivos/buho.csv","archivos/cara_feliz.csv","archivos/gato.csv","archivos/inodoro.csv","archivos/hongo_malo.csv"]
@@ -35,8 +29,12 @@ def jugar_nonograma_pygame(superficie: any, icono: any, imagen_fondo: any)-> tup
     lista_coordenadas_cuadrado = set()
     coordenadas_correctas = set()
     estado = None
-    tiempo = 0
     nombre_jugador = ""
+
+    
+    #Configuración del reloj.
+    tiempo_inicial = pygame.time.get_ticks()
+
 
 
     dibujar_cuadrado = dibujar("cuadrado")
@@ -104,6 +102,7 @@ def jugar_nonograma_pygame(superficie: any, icono: any, imagen_fondo: any)-> tup
        
 
         
+        superficie.blit(imagen_fondo, (0,0))
         dibujar_cuadrado((ANCHO_GRILLA, ALTO_GRILLA), (X_INICIO_GRILLA, Y_INICIO_GRILLA), BLANCO, superficie)
         
         
@@ -125,19 +124,28 @@ def jugar_nonograma_pygame(superficie: any, icono: any, imagen_fondo: any)-> tup
         funcion = dibujar("linea horizontal")
         dibujar_lineas((X_INICIO_GRILLA,Y_INICIO_GRILLA), datos[5],len(datos[0]),NEGRO,superficie,funcion,True)
         
+        
         if activo != False:
             activo = chequear_final(grilla_jugador, vidas, DIBUJO_CORRECTO)
             if activo == False and vidas > 0:
                     while nombre_jugador == "":
-                        nombre_jugador = obtener_texto_pygame("Ingrese su nombre: ", superficie)
-
+                        nombre_jugador = obtener_texto_pygame("Ingrese su nombre: ", superficie,imagen_fondo, datos[2])
+            tiempo_final = pygame.time.get_ticks() - tiempo_inicial
         
+        
+        #Cronómetro que se muestra mientras se juega.
+        cronometro = pygame.time.get_ticks()
+        minutos, segundos = formatear_tiempo(cronometro)
+        mostrar_texto_pygame(f"{minutos}:{segundos}", superficie,(0,0), 70)
+    
         pygame.display.update()
 
     
-    return vidas, tiempo, nombre_jugador
+    return vidas, tiempo_final, nombre_jugador
 
-def mostrar_menu(superficie: any,icono: any, imagen_fondo: any)-> None:
+
+
+def mostrar_menu(superficie: any, imagen_fondo: any)-> None:
     '''
     Muestra el menú principal.
     
@@ -145,9 +153,8 @@ def mostrar_menu(superficie: any,icono: any, imagen_fondo: any)-> None:
                 "icono" -> icono del juego.
                 "imagen_fondo" -> imagen de fondo del juego.
     '''
+    pygame.init()
     activo = True
-    pygame.display.set_icon(icono)
-    pygame.display.set_caption("Nonograma")
     superficie.blit(imagen_fondo, (0,0))
     
     while activo:
@@ -172,6 +179,6 @@ def mostrar_menu(superficie: any,icono: any, imagen_fondo: any)-> None:
         mostrar_texto_pygame("Presione ENTER para iniciar el juego", superficie, (210,300), 30)
         mostrar_texto_pygame("Presione ESPACIO para ver el ranking", superficie,(210, 350), 30)
 
-        # pygame.display.update()
+        pygame.display.update()
 
     return estado
