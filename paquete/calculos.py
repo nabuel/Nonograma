@@ -84,7 +84,7 @@ def calcular_puntuacion(tiempo: int,
 
     Retorno: El puntaje del jugador.
     '''
-    puntaje = (vidas * 10000) // tiempo
+    puntaje = (vidas * 1000000) // tiempo
     return puntaje
 
 
@@ -116,7 +116,7 @@ def calcular_datos_nonograma(rutas: list)-> tuple:
 
     medida_casillas = calcular_medida_celda(dibujo_jugador,(ANCHO_GRILLA, ALTO_GRILLA))
     
-    fuente = pygame.font.SysFont("Roboto", int(medida_casillas[0]//2) + 3)
+    fuente = pygame.font.Font("tipografia/minecraft_font.ttf", int(medida_casillas[0]//2))
 
     pistas_fila = calcular_pistas_filas(dibujo_jugador)
 
@@ -125,3 +125,41 @@ def calcular_datos_nonograma(rutas: list)-> tuple:
     longitud_casilla = medida_casillas[0]
 
     return dibujo_jugador,medida_casillas,fuente,pistas_fila,pistas_columna, longitud_casilla
+
+
+
+
+def calcular_inicio_cuadrado(posicion_click: tuple,
+                    aumento: int,
+                    coordenada_inicial:tuple)-> tuple:
+    '''
+    Según donde se clickea se calcula la coordenada de inicio del cuadrado.
+
+    PARAMETROS: "posicion_click" -> coordenada donde se cliqueó.
+                "aumento" -> la longitud del cuadrado.
+                "coordenda_inicial" -> coordenda donde se inició la grilla.
+    
+    RETORNO: La coordenada de inicio del cuadrado.
+    '''
+    x = posicion_click[0]
+    x_inicio = coordenada_inicial[0]
+
+    y = posicion_click[1]
+    y_inicio = coordenada_inicial[1]
+
+    while x != x_inicio or y != y_inicio:
+        if x < x_inicio + aumento:
+            x = int(x_inicio)
+        elif x == x_inicio:
+            pass
+        else:
+            x_inicio += aumento
+
+        if y < y_inicio + aumento:
+            y = y_inicio
+        elif y == int(y_inicio):
+            pass
+        else:
+            y_inicio += aumento
+
+    return x,y

@@ -1,4 +1,4 @@
-from .funciones_generales import *
+from .funciones_logicas import *
 from .validaciones import *
-from .funciones_especificas import *
+from .funciones_graficas import *
 from .calculos import *
