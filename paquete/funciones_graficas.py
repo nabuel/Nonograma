@@ -1,6 +1,5 @@
-from .validaciones import *
-from .calculos import *
 from .funciones_logicas import *
+from graficos.config import *
 import pygame
 
 
@@ -208,7 +207,8 @@ def mostrar_pistas_columnas_pygame(lista_pistas: tuple,
 
 #TO DO: CONVERTIR PARA QUE MUESTRE CON PYGAME
 def mostrar_ranking(ruta: str,
-                    limite: int)-> None:
+                    limite: int,
+                    superficie: any)-> None:
     '''
     Muestra los primeros 10 jugadores del ranking.
     
@@ -216,14 +216,28 @@ def mostrar_ranking(ruta: str,
                 "limite" -> límite de jugadores a mostrar.
     '''
     matriz = convertir_csv_matriz(ruta)
+    y = 200
 
     for i in range(len(matriz)):
         if i > limite:
             break
+        x = 150
         for j in range(len(matriz[i])):
-            distancia = len(matriz[0][0]) // 2
-            print(matriz[i][j],"" * distancia, end="")
-        print("")
+            
+            texto = matriz[i][j]
+            
+            if type(texto) != str:
+                texto = str(texto)
+            
+            if len(texto) > 6:
+                mostrar_texto_pygame(texto, superficie,(x - 6,y), 20, AMARILLO)
+            elif i > 0:
+                mostrar_texto_pygame(texto, superficie,(x + 10,y), 20, AMARILLO)
+            
+            else:
+                mostrar_texto_pygame(texto, superficie,(x,y), 20, AMARILLO)
+            x += 120
+        y += 50
 
 
 def dibujar_cruces_especificas(lista_coordenadas: list,
@@ -291,7 +305,7 @@ def dibujar_cruz_pygame(inicio: tuple,
                         (x, y+longitud_cruz),(x + longitud_cruz,y),3)
 
 
-def obtener_texto_pygame(superficie: any, fuente: any)-> str:
+def obtener_texto_pygame(superficie: any, fuente: any, imagen_fondo: any)-> str:
     '''
     Obtiene un texto utilizando Pygame.
     
@@ -308,29 +322,29 @@ def obtener_texto_pygame(superficie: any, fuente: any)-> str:
 
     while activo:
         for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
             
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-                posicion_mouse = pygame.mouse.get_pos()
-                print(posicion_mouse)
+            if evento.type == pygame.KEYUP:
+                if evento.key ==  pygame.K_RETURN:
+                    if len(texto_ingresado) > 0:
+                        return texto_ingresado
             
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_BACKSPACE:
                     #Borra el último caracter.
                     if len(texto_ingresado) > 0:
                         texto_ingresado = texto_ingresado[:-1]
-                    
-                elif evento.key == pygame.K_RETURN:
-                    if len(texto_ingresado) > 0:
-                        return texto_ingresado
                 else:
-                    texto_ingresado += evento.unicode
+                    if len(texto_ingresado) < 8:
+                        texto_ingresado += evento.unicode
 
-
-        dibujar_cuadrado_pygame((400, 200),(210,335),BLANCO, superficie)
+        superficie.blit(imagen_fondo,(0,0))
         
-        pygame.draw.rect(superficie,NEGRO,texto_ingresado_rect,2)
+        mostrar_texto_pygame("Ingrese un nombre de registro:",superficie,(X_INICIO_GRILLA,Y_INICIO_GRILLA),20, AMARILLO)
         
         superficie_texto = fuente.render(texto_ingresado, True, AMARILLO)
+        
         
         superficie.blit(superficie_texto, 
                         (texto_ingresado_rect.x,
@@ -359,3 +373,33 @@ def mostrar_texto_pygame(texto: str,
     rect_texto.topleft = coordenadas_inicio
     
     superficie.blit(superficie_texto, rect_texto)
+
+
+def mostrar_corazones(superficie: any, cantidad: int)-> None:
+    '''
+    Docstring for pergar_imagenes_pygame
+    
+    :param imagen: Description
+    :type imagen: str
+    :param superficie: Description
+    :type superficie: any
+    :param posicionnes_pegar: Description
+    :type posicionnes_pegar: list
+    '''
+    x = 800
+    y = 10
+    
+    for _ in range(cantidad + 1):
+        corazon = crear_vida(x,y,40,40)
+        superficie.blit(corazon["surface"], corazon["rect_pos"])
+        x -= 50
+
+
+def crear_vida(x, y, ancho, alto):
+    dict_corazon = {}
+    dict_corazon["surface"] = pygame.image.load("imagenes/mini_corazon.png")
+    dict_corazon["surface"] = pygame.transform.scale(dict_corazon["surface"], (ancho, alto))
+    dict_corazon["rect_pos"] = pygame.Rect(x, y, 200, 200)
+    dict_corazon["rect"] = pygame.Rect((x+ancho/2) -10, y + 90, 40, 20)
+
+    return dict_corazon

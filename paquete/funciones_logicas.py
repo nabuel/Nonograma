@@ -1,6 +1,6 @@
-from .funciones_graficas import *
-from .calculos import *
-from .validaciones import *
+import pygame
+from graficos.config import *
+import random
 
 
 def pintar_casilla(dibujo: list,
@@ -21,7 +21,6 @@ def pintar_casilla(dibujo: list,
     dibujo[fila][columna] = valor
     
     return dibujo
-
 
 
 def convertir_coordenada(coordenada: tuple,
@@ -180,7 +179,7 @@ def manejar_click(numero_click: int,
                  set_coordenadas_cuadrado: set,
                  posicion_click: tuple)-> tuple:
     '''
-    Maneja el click realizado por el jugador.
+    Maneja el click realizado por el jugador, cambiando valores gráficos.
     
     PARAMETROS: "numero_click" -> número del click realizado (1 = izquierdo, 3 = derecho).
                 "estado_click" -> el estado del click (correcto, incorrecto, revertir).
@@ -281,6 +280,7 @@ def actualizar_ranking(tiempo: int,
                 "vidas" -> vidas obtenidas en el nonograma.
                 "nombre_jugador" -> nombre del jugador.
     '''
+    
     ranking = convertir_csv_matriz("archivos/ranking.csv")
     puntuacion = calcular_puntuacion(tiempo, vidas)
     minutos, segundos = formatear_tiempo(tiempo)
@@ -381,3 +381,352 @@ def escribir_csv(ruta: str,
                     linea += ","
         
             archivo.write(linea + "\n")
+
+
+def calcular_pistas_filas(matriz: list)-> tuple:
+    '''
+    Calcula las pistas de las filas de la matriz.
+
+    Parametros: "matriz" -> La matriz del nonograma.
+    
+    Retorno: La tupla con las pistas.
+    '''
+    pistas = []
+    for i in range(len(matriz)):
+        lista_pistas = calcular_pistas(matriz[i])
+        pistas.append(lista_pistas)
+    return tuple(pistas)
+
+
+def calcular_pistas_columna(matriz: list)-> tuple:
+    '''
+    Calcula las pistas de las columnas de la matriz
+
+    Parametros: "matriz" -> La matriz del nonograma.
+    
+    Retorno: La tupla con las pistas
+    '''
+    pistas = []
+    for j in range(len(matriz[0])):
+        columna = extraer_columna(matriz, j)
+        lista_pistas = calcular_pistas(columna)
+        pistas.append(lista_pistas)
+    return tuple(pistas)
+
+
+def calcular_pistas(lista: list)-> list:
+    '''
+    Calcula las pistas de la lista.
+
+    Parametros: "lista" -> La lista a calcular las pistas.
+    
+    Retorno: Una lista con las pistas de la lista dada.
+    '''
+    contador = 0
+    pistas = []
+    for numero in lista:
+        if numero == 0 and contador > 0:
+            pistas.append(contador)
+            contador = 0
+        elif numero == 1:
+            contador +=1
+    
+    if contador > 0:
+        pistas.append(contador)
+
+    return pistas 
+
+
+def calcular_medida_celda(dibujo: list,
+                          medida_cuadrado: tuple)-> tuple:
+    '''
+    Calcula las medidas de cada celda para el nonograma.
+    
+    Parametros: "dibujo" -> La matriz del nonograma.
+                "medida_cuadrado" -> Las medidas del cuadrado donde se dibuja el nonograma.
+
+    Retorno: Las medidas de ancho y largo.
+    '''
+    ancho = medida_cuadrado[0] // len(dibujo) 
+    largo = medida_cuadrado[1] // len(dibujo[0])
+
+    return ancho, largo
+
+
+def calcular_puntuacion(tiempo: int,
+                        vidas: int)-> int:
+    '''
+    Calcula la puntuación del jugador.
+    
+    Parametros: "tiempo" -> El tiempo que tardó el jugador en completar el nonograma.
+                "vidas" -> Las vidas que le quedan al jugador.
+
+    Retorno: El puntaje del jugador.
+    '''
+    puntaje = (vidas * 1000000) // tiempo
+    return puntaje
+
+
+def dividir(dividendo: int|float,
+            divisor: int|float)-> int|float:
+    '''
+    Divide al dividendo por el divisor
+    
+    Parametros: "dividendo" -> El número a dividir.
+                "divisor" -> El número por el cual se divide.
+    
+    Retorno: El resultado de la división.
+    '''
+    resultado = dividendo / divisor
+
+    return resultado
+
+
+def calcular_datos_nonograma(dibujo: list)-> tuple:
+    '''
+    Calcula los datos necesarios para el nonograma.
+
+    PARAMETROS: "rutas" -> lista que contine las rutas de los dibujos.
+    
+    RETORNO: Los datos obtenidos.
+    '''
+
+    medida_casillas = calcular_medida_celda(dibujo,(ANCHO_GRILLA, ALTO_GRILLA))
+    
+    fuente = pygame.font.Font("tipografia/minecraft_font.ttf", int(medida_casillas[0]//2))
+
+    pistas_fila = calcular_pistas_filas(dibujo)
+
+    pistas_columna = calcular_pistas_columna(dibujo)
+
+    longitud_casilla = medida_casillas[0]
+
+    return medida_casillas,fuente,pistas_fila,pistas_columna, longitud_casilla
+
+
+def calcular_inicio_cuadrado(posicion_click: tuple,
+                    aumento: int,
+                    coordenada_inicial:tuple)-> tuple:
+    '''
+    Según donde se clickea se calcula la coordenada de inicio del cuadrado.
+
+    PARAMETROS: "posicion_click" -> coordenada donde se cliqueó.
+                "aumento" -> la longitud del cuadrado.
+                "coordenda_inicial" -> coordenda donde se inició la grilla.
+    
+    RETORNO: La coordenada de inicio del cuadrado.
+    '''
+    x = posicion_click[0]
+    x_inicio = coordenada_inicial[0]
+
+    y = posicion_click[1]
+    y_inicio = coordenada_inicial[1]
+
+    while x != x_inicio or y != y_inicio:
+        if x < x_inicio + aumento:
+            x = int(x_inicio)
+        elif x == x_inicio:
+            pass
+        else:
+            x_inicio += aumento
+
+        if y < y_inicio + aumento:
+            y = y_inicio
+        elif y == int(y_inicio):
+            pass
+        else:
+            y_inicio += aumento
+
+    return x,y
+
+
+def validar_coordenada(fila: int,
+                       columna: int,
+                       matriz: list)-> bool:
+    '''
+    Valida si la coordenada existe dentro de la matriz.
+    
+    Parametros: "fila" -> La fila a validar.
+                "columna" -> La columna a validar.
+                "matriz" -> La matriz donde se van a validar las coordenadas.
+
+    Retorno: True si son válidas.
+             False si no lo son.
+    '''
+    if fila >= len(matriz):
+        return False
+    elif columna >= len(matriz[0]):
+        return False
+
+    return True
+
+
+def chequear_final(dibujo: list,
+                   vidas: int,
+                   respuesta: str)-> bool:
+    '''
+    Chequea si se sigue jugando o no.
+
+    Parametros: "dibujo" -> La matriz del jugador.
+                "vidas" -> Las vidas que le quedan al jugador.
+                "respuesta" -> La matriz correcta del nonograma.
+    
+    Retorno: True si se sigue jugando.
+             False si no se sigue jugandno.
+    '''
+    seguir_jugando = False
+    if vidas == 0:
+        print("Juego terminado. No te quedan vidas.")
+        print("")
+    elif chequear_dibujo_terminado(dibujo, respuesta):
+        print("GANASTE!! Completaste correctamente el dibujo.")
+        print("")
+    else:
+        seguir_jugando = True
+    
+    return seguir_jugando
+
+
+def validar_click_grilla(posicion_mouse: tuple)-> bool:
+    '''
+    Verifica si la coordenada del mouse está dentro de la grilla del Nonograma.
+    
+    Parametros: "posicion_mouse" -> La posición del mouse.
+    
+    Retorno: True si está dentro de la grilla.
+             False si no lo está.
+    '''
+    x,y = posicion_mouse
+    bandera = True
+
+    if x < X_INICIO_GRILLA or x > X_INICIO_GRILLA + ANCHO_GRILLA - 2:
+        bandera = False
+    elif y < Y_INICIO_GRILLA or y > Y_INICIO_GRILLA + ALTO_GRILLA:
+        bandera = False
+    
+    return bandera
+
+
+def formatear_tiempo(milisegundos: int)-> tuple:
+    '''
+    Convierte el tiempo ingresado en minutos y segundos.
+    
+    Parametros: "milisegundos" -> milisegundos a convertir en minutos y segundos.
+    
+    Retorno: Una tupla con minutos, segundos
+    
+    OBSERVACIÓN: En caso de que sobren milisegundos no se van a retornar.
+    '''
+    
+    segundos_totales = milisegundos // 1000
+    
+    minutos_retorno = segundos_totales // 60
+    segundos_retorno = segundos_totales % 60
+    
+    return minutos_retorno, segundos_retorno
+
+
+def obtener_dibujo(lista_rutas: list)-> list:
+    '''
+    Obtiene un dibujo al azar.
+    
+    Parametros: "lista_rutas" -> La lista con las rutas de los dibujos.
+
+    Retorno: el dibujo seleccionado
+    '''
+    numero_dibujo = random.randint(0,len(lista_rutas)-1)
+    dibujo = convertir_csv_matriz(lista_rutas[numero_dibujo])
+
+    return dibujo
+
+
+def chequear_dibujo_terminado(dibujo: list,
+                             respuesta: list)-> bool:
+    '''
+    Chequea si el dibujo fué completado correctamente.
+    
+    Parametros: "dibujo" -> La matriz del jugador.
+                "respuesta" -> La matriz correcta del nonograma.
+
+    Retorno: True si fué completado correctamente.
+             False si no fué completado correctamente.
+    '''
+    contador_respuesta = 0
+    contador = 0
+    
+    for i in range(len(dibujo)):
+        contador_respuesta += respuesta[i].count(1)
+        for j in range(len(dibujo[i])):
+            if dibujo[i][j] == 1 and respuesta[i][j] == 1:
+                contador += 1
+    
+    if contador_respuesta == contador:
+        return True
+    else:
+        return False
+
+
+def manejar_caso_correcto(valor_click: int,
+                        grilla_jugador: list,
+                        posicion_mouse: tuple,
+                        longitud_celda: int,
+                        lista_coordenadas_espera: list):
+    '''
+    Aplica los cambios del caso correcto
+    '''
+    fila,columna = convertir_coordenadas_matriz(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
+    
+    if valor_click == 3:
+        grilla_jugador[fila][columna] = 0                                
+    else:
+        grilla_jugador[fila][columna] = 1
+
+    if posicion_mouse in lista_coordenadas_espera:
+        lista_coordenadas_espera.remove((posicion_mouse))
+
+
+def ejecutar_delay(lista_coordenadas_espera: list,
+                   vidas: int,
+                   set_coordenadas_correctas: set,
+                   set_coordenadas_cruz: set,
+                   set_coordenadas_cuadrado: set,
+                   grilla_jugador: list,
+                   lista_tiempos: list,
+                   longitud_celda: int)-> int:
+    '''
+    Docstring for ejecutar_delay
+    
+    :param lista_coordenadas_espera: Description
+    :type lista_coordenadas_espera: list
+    :param vidas: Description
+    :type vidas: int
+    :param set_coordenadas_correctas: Description
+    :type set_coordenadas_correctas: set
+    :param set_coordenadas_cruz: Description
+    :type set_coordenadas_cruz: set
+    :param set_coordenadas_cuadrado: Description
+    :type set_coordenadas_cuadrado: set
+    :param grilla_jugador: Description
+    :type grilla_jugador: list
+    '''
+    
+    
+    vidas -= 1
+    correccion = lista_coordenadas_espera.pop(0)
+    set_coordenadas_correctas.add(correccion)
+    fila, columna = convertir_coordenadas_matriz(correccion,(X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
+
+    if correccion in set_coordenadas_cruz:
+        set_coordenadas_cruz.discard(correccion)
+        set_coordenadas_cuadrado.add(correccion)
+        grilla_jugador[fila][columna] = 1 
+    else:
+        set_coordenadas_cruz.add(correccion)
+        set_coordenadas_cuadrado.discard(correccion)
+        grilla_jugador[fila][columna] = 0
+                    
+    lista_tiempos.pop(0)
+    
+    return vidas
+
+

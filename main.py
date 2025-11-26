@@ -2,7 +2,6 @@ import pygame
 from paquete.funciones_logicas import *
 from paquete.funciones_graficas import *
 from graficos.config import *
-from paquete.calculos import *
 from paquete.estado_juego import *
 
 pygame.init()
@@ -10,12 +9,15 @@ activo = True
 
 
 #Configuración pantalla
-VENTANA = pygame.display.set_mode((ANCHO_VENTANA, ALTO_VENTANA))
-FONDO_IMAGEN = pygame.image.load("imagenes/fondo_minecraft.png")
-VENTANA.blit(FONDO_IMAGEN, (0, 0))
+ventana = pygame.display.set_mode((ANCHO_VENTANA, ALTO_VENTANA))
+fondo_imagen = pygame.image.load("imagenes/fondo_minecraft.png")
+ventana.blit(fondo_imagen, (0, 0))
 ICONO = pygame.image.load("imagenes/icono_minecraft.png")
 pygame.display.set_caption("Nonograma")
 pygame.display.set_icon(ICONO)
+rutas = ["archivos/auto.csv","archivos/buho.csv","archivos/cara_feliz.csv","archivos/gato.csv","archivos/inodoro.csv","archivos/hongo_malo.csv"]
+fuente = pygame.font.Font("tipografia/minecraft_font.ttf", 20)
+
 
 #Configuración de estados.
 MENU = 1
@@ -30,22 +32,37 @@ while activo:
     for evento in pygame.event.get():
 
         if evento.type == pygame.QUIT:
-            print("Se tocó cerrar")
             activo = False
+            ejecutar = 0
         
         if ejecutar == MENU:
-            ejecutar = mostrar_menu(VENTANA, FONDO_IMAGEN)
+            while nombre_jugador == "":
+                    nombre_jugador = obtener_texto_pygame(ventana, fuente, fondo_imagen)
+            ejecutar = mostrar_menu(ventana, fondo_imagen, nombre_jugador)
+            
         elif ejecutar == JUEGO:
-            resultado = jugar_nonograma_pygame(VENTANA,FONDO_IMAGEN)
-            vidas, tiempo, nombre_jugador, ejecutar = resultado
-            # ejecutar = 1
-            if vidas > 0:
-                actualizar_ranking(tiempo,vidas,nombre_jugador)
+            
+            dibujo = obtener_dibujo(rutas)
+            
+            datos = calcular_datos_nonograma(dibujo)
+            
+            resultado = jugar_nonograma_pygame(ventana,fondo_imagen, dibujo, datos)
+            
+            if type(resultado) == int:
+                ejecutar = resultado
+            else:
+                vidas, tiempo = resultado
+                
+                if vidas > 0:
+                    actualizar_ranking(tiempo,vidas,nombre_jugador)
+                    ejecutar = pantalla_ganador_perdedor(ventana,fondo_imagen)
+                else:
+                    ejecutar = pantalla_ganador_perdedor(ventana, fondo_imagen, False)
             
             pygame.event.clear()
             
         elif ejecutar == RANKING:
-            mostrar_ranking("archivos/ranking.csv",10)
+            pantalla_ranking(ventana,fondo_imagen,"archivos/ranking.csv")
             ejecutar = 1
             
 
