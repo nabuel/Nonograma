@@ -1,4 +1,5 @@
 import pygame
+import pygame.mixer as mixer
 from paquete.funciones_logicas import *
 from paquete.funciones_graficas import *
 from graficos.config import *
@@ -17,6 +18,12 @@ pygame.display.set_caption("Nonograma")
 pygame.display.set_icon(ICONO)
 rutas = ["archivos/auto.csv","archivos/buho.csv","archivos/cara_feliz.csv","archivos/gato.csv","archivos/inodoro.csv","archivos/hongo_malo.csv"]
 fuente = pygame.font.Font("tipografia/minecraft_font.ttf", 20)
+
+#Musica para que suene todo el tiempo
+mixer.init()
+mixer.music.load("sonidos/Minecraft.mp3")
+mixer.music.set_volume(0.5)
+mixer.music.play()
 
 
 #Configuración de estados.
@@ -64,8 +71,6 @@ while activo:
         elif ejecutar == RANKING:
             pantalla_ranking(ventana,fondo_imagen,"archivos/ranking.csv")
             ejecutar = 1
-            
-
     
     pygame.display.update()
 

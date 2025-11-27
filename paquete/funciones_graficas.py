@@ -11,19 +11,15 @@ def dibujar_lineas(inicio: tuple,
                     funcion: any,
                     sentido= False)->None:
     '''
-    Dibuja varias lineas en el sentido indicado
+    Dibuja múltiples líneas en una superficie aplicando una función repetidamente.
 
-    PARAMETROS: "inicio"-> Punto de inicio de la linea.
-                
-                "color" -> color de la linea.
-                
-                "repeticiones" -> la cantidad de veces que se ejecutará el proceso.
-                
-                "superficie"-> la superficie donde será pintada las lineas.
-                
-                "funcion"-> funcion que debe dibujar la linea.
-                
-                "sentido" -> orientación en la cual se dibujan las lineas. Si sentido = False se incrementa el "x" para dibujar lineas verticales. En caso de que sentido = True se incrementa el eje "y" para dibujar lineas horizontales
+    PARAMETROS: "inicio" -> Tupla (x, y) que representa las coordenadas de inicio.
+                "aumento" -> valor de incremento para moverse en el eje.
+                "repeticiones" -> cantidad de repeticiones para dibujar.
+                "color" -> tupla que representa el color (ej. RGB o RGBA).
+                "superficie" -> objeto superficie donde se dibujarán las líneas.
+                "funcion" -> función callable que dibuja una línea.
+                "sentido" -> Si False (default), se mueve en eje x. Si True, en eje y.
     '''
     x= inicio[0]
     y = inicio[1]
@@ -37,13 +33,22 @@ def dibujar_lineas(inicio: tuple,
 
 
 def dibujar_linea_vertical(inicio: tuple,
-                           aumento: int,
-                           repeticiones: int,
-                           color: tuple,
-                           superficie: any)-> None:
+                        aumento: int,
+                        repeticiones: int,
+                        color: tuple,
+                        superficie: any)-> None:
+
     '''
-    Dibuja una linea vertical de la medidas indicadas. Dentro de Pygame.
+    Dibuja una linea vertical en Pygame.
+
+    Parametros: "inicio"-> Punto de inicio de la linea.
+                "aumento"-> es el valor por el cual el eje y irá aumentando.
+                "repeticiones" -> la cantidad de veces que se ejecutará el proceso.
+                "color" -> color de la linea.   
+                "superficie"-> la superficie donde será pintada las lineas.
     '''
+    
+    
     x= inicio[0]
     y = inicio[1]
     i = 0
@@ -108,6 +113,7 @@ def dibujar_cuadrados_pygame(medidas_cuadrado:tuple,
                 "coordenada_inicio" -> es la coordenada de la punta superior izquierda del cuadrado.
                 "color" -> color del cuadrado.
                 "superficie"-> la superficie donde será pintado el cuadrado.
+                "repeticiones" -> cantidad de cuadrados a dibujar.
                 "aumento"-> es el valor por el cual los ejes irán aumentado.
     '''
     x,y = coordenada_inicio
@@ -205,15 +211,15 @@ def mostrar_pistas_columnas_pygame(lista_pistas: tuple,
         x += aumento
 
 
-#TO DO: CONVERTIR PARA QUE MUESTRE CON PYGAME
 def mostrar_ranking(ruta: str,
                     limite: int,
                     superficie: any)-> None:
     '''
-    Muestra los primeros 10 jugadores del ranking.
+    Muestra una tabla de ranking en una superficie de Pygame leyendo datos desde un archivo CSV.
     
-    Parametros: "ruta" -> ruta del archivo csv donde se encuentra el ranking.
-                "limite" -> límite de jugadores a mostrar.
+    PARAMETROS: "ruta" -> ruta del archivo CSV que contiene los datos del ranking.
+                "limite" -> cantidad máxima de filas a mostrar desde la matriz de ranking.
+                "superficie" -> la superficie donde será pintado el ranking.
     '''
     matriz = convertir_csv_matriz(ruta)
     y = 200
@@ -306,13 +312,17 @@ def dibujar_cruz_pygame(inicio: tuple,
 
 
 def obtener_texto_pygame(superficie: any, fuente: any, imagen_fondo: any)-> str:
-    '''
-    Obtiene un texto utilizando Pygame.
+    """
+    Obtiene un texto ingresado por el usuario utilizando una interfaz gráfica con Pygame.
     
-    Parametros: mensaje -> El mensaje que se le mostrará al usuario para solicitar el texto.
+    Parámetros:
+        "superficie" -> Superficie de Pygame donde se dibujará la interfaz de entrada de texto.
+        "fuente" -> Objeto de fuente de Pygame utilizado para renderizar el texto ingresado.
+        "imagen_fondo" -> Imagen de fondo que se mostrará mientras se solicita el texto.
     
-    Retorno: El texto obtenido.
-    '''
+    Retorno: El texto ingresado por el usuario.
+    """
+    
     texto_ingresado = ""
     texto_ingresado_rect = pygame.Rect(X_INICIO_GRILLA, Y_INICIO_GRILLA, 200, 25)
     ancho, alto = superficie.get_size()
@@ -328,6 +338,7 @@ def obtener_texto_pygame(superficie: any, fuente: any, imagen_fondo: any)-> str:
             if evento.type == pygame.KEYUP:
                 if evento.key ==  pygame.K_RETURN:
                     if len(texto_ingresado) > 0:
+                        texto_ingresado = texto_ingresado[0:-1]
                         return texto_ingresado
             
             if evento.type == pygame.KEYDOWN:
@@ -376,16 +387,13 @@ def mostrar_texto_pygame(texto: str,
 
 
 def mostrar_corazones(superficie: any, cantidad: int)-> None:
-    '''
-    Docstring for pergar_imagenes_pygame
+    """
+    Dibuja una cantidad específica de corazones ("vidas") en la superficie dada usando Pygame.
     
-    :param imagen: Description
-    :type imagen: str
-    :param superficie: Description
-    :type superficie: any
-    :param posicionnes_pegar: Description
-    :type posicionnes_pegar: list
-    '''
+    Parámetros:
+        "superficie" -> Superficie donde se dibujan los corazones.
+        "cantidad" ->  Número de corazones a mostrar.
+    """
     x = 800
     y = 10
     

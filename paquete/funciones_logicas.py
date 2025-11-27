@@ -38,7 +38,7 @@ def convertir_coordenada(coordenada: tuple,
                 "sentido" -> cuando es true se convierte la coordenada de la fila. En caso de que sea False convierte la coordenada de la columna.
     
     RETORNO: El valor de la fila ó de la columna según el sentido.
-             Si el valor es -1 es que esa coordenada no está dentro de la matriz.
+            Si el valor es -1 es que esa coordenada no está dentro de la matriz.
     '''
     if sentido: #Para la fila.
         eje = coordenada[1]
@@ -80,7 +80,7 @@ def convertir_coordenadas_matriz(coordenada: tuple,
     return fila,columna
 
 
-def ordenar_ranking(ranking: list):
+def ordenar_ranking(ranking: list) -> list:
     '''
     Ordena el ranking de mayor a menor.
     
@@ -438,7 +438,7 @@ def calcular_pistas(lista: list)-> list:
 
 
 def calcular_medida_celda(dibujo: list,
-                          medida_cuadrado: tuple)-> tuple:
+                        medida_cuadrado: tuple)-> tuple:
     '''
     Calcula las medidas de cada celda para el nonograma.
     
@@ -594,7 +594,7 @@ def validar_click_grilla(posicion_mouse: tuple)-> bool:
     Parametros: "posicion_mouse" -> La posición del mouse.
     
     Retorno: True si está dentro de la grilla.
-             False si no lo está.
+            False si no lo está.
     '''
     x,y = posicion_mouse
     bandera = True
@@ -641,7 +641,7 @@ def obtener_dibujo(lista_rutas: list)-> list:
 
 
 def chequear_dibujo_terminado(dibujo: list,
-                             respuesta: list)-> bool:
+                            respuesta: list)-> bool:
     '''
     Chequea si el dibujo fué completado correctamente.
     
@@ -649,7 +649,7 @@ def chequear_dibujo_terminado(dibujo: list,
                 "respuesta" -> La matriz correcta del nonograma.
 
     Retorno: True si fué completado correctamente.
-             False si no fué completado correctamente.
+            False si no fué completado correctamente.
     '''
     contador_respuesta = 0
     contador = 0
@@ -670,10 +670,16 @@ def manejar_caso_correcto(valor_click: int,
                         grilla_jugador: list,
                         posicion_mouse: tuple,
                         longitud_celda: int,
-                        lista_coordenadas_espera: list):
-    '''
-    Aplica los cambios del caso correcto
-    '''
+                        lista_coordenadas_espera: list)-> None:
+    """
+    Maneja la lógica para el caso correcto cuando se hace clic en una celda del Nonograma.
+    
+    Parametros: "valor_click" -> Valor que representa el tipo de click (por ejemplo, 3 para borrar, otros valores para marcar).
+            "grilla_jugador" -> Grilla lógica del jugador (matriz 2D).
+            "posicion_mouse" -> Coordenadas (x, y) del click del mouse.
+            "longitud_celda" -> Longitud de cada celda en la grilla.
+            "lista_coordenadas_espera" -> Lista de coordenadas de celdas que están en espera de acción.
+    """
     fila,columna = convertir_coordenadas_matriz(posicion_mouse, (X_INICIO_GRILLA,Y_INICIO_GRILLA),longitud_celda,grilla_jugador)
     
     if valor_click == 3:
@@ -694,23 +700,19 @@ def ejecutar_delay(lista_coordenadas_espera: list,
                    lista_tiempos: list,
                    longitud_celda: int)-> int:
     '''
-    Docstring for ejecutar_delay
+    Ejecuta una acción de corrección una vez cumplido el tiempo de delay.
+
+    PARAMETROS: "lista_coordenadas_espera" -> Lista de coordenadas esperando ser procesadas.
+                "vidas" -> Número actual de vidas restantes.
+                "set_coordenadas_correctas" -> Conjunto de coordenadas marcadas correctamente.
+                "set_coordenadas_cruz" -> Conjunto de coordenadas marcadas con una cruz (X).
+                "set_coordenadas_cuadrado" -> Conjunto de coordenadas marcadas con un cuadrado.
+                "grilla_jugador" -> Grilla 2D que representa el estado actual del jugador.
+                "lista_tiempos" -> Lista de información de tiempos a ser actualizada.
+                "longitud_celda" -> Longitud de cada celda en píxeles para conversión de coordenadas.
     
-    :param lista_coordenadas_espera: Description
-    :type lista_coordenadas_espera: list
-    :param vidas: Description
-    :type vidas: int
-    :param set_coordenadas_correctas: Description
-    :type set_coordenadas_correctas: set
-    :param set_coordenadas_cruz: Description
-    :type set_coordenadas_cruz: set
-    :param set_coordenadas_cuadrado: Description
-    :type set_coordenadas_cuadrado: set
-    :param grilla_jugador: Description
-    :type grilla_jugador: list
+    RETORNO: Número de vidas actualizado.
     '''
-    
-    
     vidas -= 1
     correccion = lista_coordenadas_espera.pop(0)
     set_coordenadas_correctas.add(correccion)
@@ -728,5 +730,3 @@ def ejecutar_delay(lista_coordenadas_espera: list,
     lista_tiempos.pop(0)
     
     return vidas
-
-
